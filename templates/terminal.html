@@ -3,35 +3,49 @@
 {% block content %}
 <div class="row">
     <div class="col-12">
-        <div class="card border-success mb-4">
-            <div class="card-header bg-success text-white">
-                <h2 class="mb-0">
-                    <i class="fas fa-terminal me-2"></i>Terminal
-                </h2>
+        <div class="card border-dark hacker-card mb-4">
+            <div class="card-header bg-dark text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h2 class="mb-0">
+                        <i class="fas fa-terminal me-2"></i>Advanced Terminal
+                    </h2>
+                    <div>
+                        <span class="badge bg-success me-1 terminal-badge">SECURE</span>
+                        <span class="badge bg-primary terminal-badge">v2.0</span>
+                    </div>
+                </div>
             </div>
-            <div class="card-body">
-                <div class="alert alert-info">
-                    <i class="fas fa-info-circle me-2"></i>
-                    <strong>Verfügbare Befehle:</strong> ping, traceroute, nslookup, dig, host, whois, ifconfig, ipconfig, netstat
+            <div class="card-body terminal-card-body">
+                <div class="system-info mb-2">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <small class="text-muted"><i class="fas fa-user-shield me-1"></i>User: {{ current_user.username }} | <i class="fas fa-server me-1"></i>Session: {{ current_user.get_id() }}</small>
+                        </div>
+                        <div>
+                            <small class="text-muted"><i class="fas fa-clock me-1"></i><span id="terminal-time"></span></small>
+                        </div>
+                    </div>
                 </div>
                 
-                <div class="terminal-output mb-3" id="terminalOutput">
+                <div class="terminal-output mb-3 hacker-terminal" id="terminalOutput">
                     {% if output %}
                     <pre class="terminal-text">{{ output }}</pre>
                     {% else %}
                     <pre class="terminal-text">
-Netzwerksicherheits-Terminal v1.0
-Geben Sie einen Befehl ein...
+<span class="text-success">NetSec Terminal v2.0</span> - Enhanced Security Research Platform
+<span class="text-primary">[*]</span> Type 'help' to see available commands
+<span class="text-warning">[!]</span> All operations are logged and for educational purposes only
+<span class="text-danger">[+]</span> Ready for commands...
                     </pre>
                     {% endif %}
                 </div>
                 
                 <form method="POST" action="{{ url_for('terminal') }}" id="terminalForm">
                     {{ form.hidden_tag() }}
-                    <div class="input-group">
-                        <span class="input-group-text bg-dark">$</span>
+                    <div class="input-group hacker-input-group">
+                        <span class="input-group-text bg-dark text-success terminal-prompt">{{ current_user.username }}@netsec:</span>
                         {{ form.command(class="form-control terminal-input", placeholder="Befehl eingeben...", autocomplete="off") }}
-                        <button type="submit" class="btn btn-success">
+                        <button type="submit" class="btn btn-dark terminal-btn">
                             <i class="fas fa-play me-1"></i>Ausführen
                         </button>
                     </div>
@@ -50,77 +64,203 @@ Geben Sie einen Befehl ein...
 
 <div class="row">
     <div class="col-md-6">
-        <div class="card border-info">
-            <div class="card-header bg-info text-white">
-                <h4 class="mb-0">Terminal-Hilfe</h4>
+        <div class="card border-dark hacker-card">
+            <div class="card-header bg-dark text-white">
+                <h4 class="mb-0"><i class="fas fa-book me-2"></i>Befehlsreferenz</h4>
             </div>
             <div class="card-body">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Befehl</th>
-                            <th>Beschreibung</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><code>ping &lt;host&gt;</code></td>
-                            <td>Sendet ICMP-Echo-Anforderungen an einen Host</td>
-                        </tr>
-                        <tr>
-                            <td><code>traceroute &lt;host&gt;</code></td>
-                            <td>Zeigt den Pfad an, den Pakete zu einem Netzwerkhost nehmen</td>
-                        </tr>
-                        <tr>
-                            <td><code>nslookup &lt;domain&gt;</code></td>
-                            <td>Fragt DNS-Server nach Domänen- oder IP-Adressen-Informationen ab</td>
-                        </tr>
-                        <tr>
-                            <td><code>netstat</code></td>
-                            <td>Zeigt Netzwerkverbindungen, Routing-Tabellen und Schnittstellenstatistiken an</td>
-                        </tr>
-                        <tr>
-                            <td><code>whois &lt;domain&gt;</code></td>
-                            <td>Sucht nach Registrierungsinformationen für eine Domain</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="accordion" id="commandAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingOne">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                <i class="fas fa-network-wired me-2"></i>Netzwerkbefehle
+                            </button>
+                        </h2>
+                        <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne">
+                            <div class="accordion-body">
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Befehl</th>
+                                                <th>Beschreibung</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><code>ping &lt;host&gt;</code></td>
+                                                <td>Sendet ICMP-Echo-Anforderungen an einen Host</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>traceroute &lt;host&gt;</code></td>
+                                                <td>Zeigt den Pfad zu einem Netzwerkhost</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>nslookup &lt;domain&gt;</code></td>
+                                                <td>DNS-Abfrage für eine Domain</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>dig &lt;domain&gt;</code></td>
+                                                <td>Detaillierte DNS-Informationen</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>nmap &lt;host&gt;</code></td>
+                                                <td>Port-Scanner (simuliert)</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>curl &lt;url&gt;</code></td>
+                                                <td>HTTP-Header abrufen</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingTwo">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                <i class="fas fa-laptop-code me-2"></i>System & Datei
+                            </button>
+                        </h2>
+                        <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo">
+                            <div class="accordion-body">
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Befehl</th>
+                                                <th>Beschreibung</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><code>ps</code></td>
+                                                <td>Prozessliste anzeigen</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>top</code></td>
+                                                <td>Systemressourcen überwachen (simuliert)</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>uname -a</code></td>
+                                                <td>Systeminformationen anzeigen</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>ls</code></td>
+                                                <td>Dateien auflisten (simuliert)</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>cat &lt;file&gt;</code></td>
+                                                <td>Dateiinhalt anzeigen (simuliert)</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>find &lt;pattern&gt;</code></td>
+                                                <td>Dateien suchen (simuliert)</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingThree">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                <i class="fas fa-info-circle me-2"></i>Hilfe & Weitere
+                            </button>
+                        </h2>
+                        <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree">
+                            <div class="accordion-body">
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Befehl</th>
+                                                <th>Beschreibung</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><code>help</code></td>
+                                                <td>Zeigt alle verfügbaren Befehle an</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>echo &lt;text&gt;</code></td>
+                                                <td>Text ausgeben</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>date</code></td>
+                                                <td>Aktuelles Datum und Uhrzeit anzeigen</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>wget &lt;url&gt;</code></td>
+                                                <td>Datei herunterladen (simuliert)</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>arp</code></td>
+                                                <td>ARP-Tabelle anzeigen</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>route</code></td>
+                                                <td>Routing-Tabelle anzeigen</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
     
     <div class="col-md-6">
-        <div class="card border-warning">
-            <div class="card-header bg-warning text-dark">
-                <h4 class="mb-0">Beispiele</h4>
+        <div class="card border-dark hacker-card">
+            <div class="card-header bg-dark text-white">
+                <h4 class="mb-0"><i class="fas fa-code me-2"></i>Terminal-Tipps</h4>
             </div>
             <div class="card-body">
-                <div class="mb-3">
-                    <h5>Ping-Beispiel</h5>
-                    <div class="bg-dark text-light p-2 rounded">
-                        <code>ping -c 4 google.com</code>
+                <div class="alert alert-dark terminal-tip">
+                    <i class="fas fa-lightbulb text-warning me-2"></i>
+                    <strong>Pro-Tipp:</strong> Nutzen Sie die Pfeiltasten ↑↓ für den Zugriff auf den Befehlsverlauf.
+                </div>
+                
+                <h5 class="mt-3 mb-2">Nützliche Befehlskombinationen</h5>
+                <div class="code-examples">
+                    <div class="code-example mb-2">
+                        <div class="code-title">Netzwerk-Diagnose</div>
+                        <div class="code-content">
+                            <code>ping -c 4 example.com && traceroute example.com</code>
+                        </div>
+                    </div>
+                    
+                    <div class="code-example mb-2">
+                        <div class="code-title">Sicherheits-Scan</div>
+                        <div class="code-content">
+                            <code>nmap 192.168.1.1</code>
+                        </div>
+                    </div>
+                    
+                    <div class="code-example mb-2">
+                        <div class="code-title">Domain-Analyse</div>
+                        <div class="code-content">
+                            <code>whois example.com && dig example.com</code>
+                        </div>
+                    </div>
+                    
+                    <div class="code-example">
+                        <div class="code-title">System-Analyse</div>
+                        <div class="code-content">
+                            <code>uname -a && ps aux</code>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="mb-3">
-                    <h5>Traceroute-Beispiel</h5>
-                    <div class="bg-dark text-light p-2 rounded">
-                        <code>traceroute github.com</code>
-                    </div>
-                </div>
-                
-                <div class="mb-3">
-                    <h5>Nslookup-Beispiel</h5>
-                    <div class="bg-dark text-light p-2 rounded">
-                        <code>nslookup example.com</code>
-                    </div>
-                </div>
-                
-                <div class="mb-3">
-                    <h5>DNS-Abfrage</h5>
-                    <div class="bg-dark text-light p-2 rounded">
-                        <code>dig twitter.com</code>
-                    </div>
+                <div class="alert alert-danger mt-3 mb-0">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Hinweis:</strong> Alle Befehle werden protokolliert und sind nur für Bildungszwecke gedacht.
                 </div>
             </div>
         </div>
@@ -130,4 +270,36 @@ Geben Sie einen Befehl ein...
 
 {% block extra_js %}
 <script src="{{ url_for('static', filename='js/terminal.js') }}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Terminal time display
+    function updateTerminalTime() {
+        const now = new Date();
+        const timeStr = now.toTimeString().split(' ')[0];
+        document.getElementById('terminal-time').textContent = timeStr;
+    }
+    
+    updateTerminalTime();
+    setInterval(updateTerminalTime, 1000);
+    
+    // Terminal text coloring (extending the terminal.js functionality)
+    const terminalOutput = document.getElementById('terminalOutput');
+    if (terminalOutput) {
+        const preElements = terminalOutput.querySelectorAll('pre');
+        preElements.forEach(pre => {
+            // Highlight command prompts
+            pre.innerHTML = pre.innerHTML.replace(
+                /^\[.*?\]/gm, 
+                '<span class="terminal-prompt">$&</span>'
+            );
+            
+            // Highlight security terms
+            pre.innerHTML = pre.innerHTML.replace(
+                /\b(?:vulnerability|exploit|attack|breach|threat|malware|ransomware|backdoor|trojan|virus|secure|encrypted)\b/gi,
+                '<span class="terminal-highlight">$&</span>'
+            );
+        });
+    }
+});
+</script>
 {% endblock %}

@@ -1,12 +1,56 @@
-/* Custom styles for the network security platform */
+/* Custom styles for the network security platform - Professional Hacker Edition */
 
-/* Terminal styling */
+/* Global Theme Adjustments */
+:root {
+    --hacker-primary: #05d9e8;
+    --hacker-secondary: #005678;
+    --hacker-success: #00ff41;
+    --hacker-warning: #ff5722;
+    --hacker-danger: #d30000;
+    --hacker-bg-dark: #0a0a0a;
+    --hacker-bg-medium: #1a1a1a;
+    --hacker-text: #d3d3d3;
+    --hacker-highlight: #05d9e8;
+    --hacker-terminal-bg: #0c0c0c;
+    --hacker-terminal-text: #cccccc;
+    --mono-font: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+}
+
+/* Card Styling */
+.hacker-card {
+    background-color: var(--hacker-bg-medium);
+    border: 1px solid #333;
+    box-shadow: 0 0 10px rgba(5, 217, 232, 0.1);
+}
+
+.hacker-card .card-header {
+    border-bottom: 1px solid #333;
+}
+
+.hacker-card:hover {
+    box-shadow: 0 0 15px rgba(5, 217, 232, 0.2);
+}
+
+/* Advanced Terminal Styling */
+.hacker-terminal {
+    background-color: var(--hacker-terminal-bg);
+    color: var(--hacker-terminal-text);
+    border: 1px solid #333;
+    border-radius: 4px;
+    padding: 1rem;
+    font-family: var(--mono-font);
+    height: 450px;
+    overflow-y: auto;
+    margin-bottom: 1rem;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
 .terminal-output {
     background-color: #212529;
     color: #f8f9fa;
     border-radius: 0.25rem;
     padding: 1rem;
-    font-family: 'Courier New', monospace;
+    font-family: var(--mono-font);
     height: 400px;
     overflow-y: auto;
     margin-bottom: 1rem;
@@ -17,45 +61,202 @@
     padding: 0;
     white-space: pre-wrap;
     word-wrap: break-word;
+    line-height: 1.5;
+    color: var(--hacker-terminal-text);
 }
 
 .terminal-input {
-    font-family: 'Courier New', monospace;
-    background-color: #212529;
-    color: #f8f9fa;
+    font-family: var(--mono-font);
+    background-color: #101010;
+    color: var(--hacker-success);
+    border: 1px solid #333;
+}
+
+.terminal-input:focus {
+    background-color: #0c0c0c;
+    color: var(--hacker-success);
+    border-color: var(--hacker-primary);
+    box-shadow: 0 0 0 0.2rem rgba(5, 217, 232, 0.25);
+}
+
+.terminal-prompt {
+    color: var(--hacker-success) !important;
+    font-weight: bold;
+}
+
+.terminal-highlight {
+    color: var(--hacker-highlight);
+    font-weight: bold;
+}
+
+.terminal-btn {
+    background-color: #0c0c0c;
+    color: var(--hacker-primary);
+    border: 1px solid #333;
+}
+
+.terminal-btn:hover {
+    background-color: #1a1a1a;
+    color: var(--hacker-primary);
+}
+
+.terminal-badge {
+    font-family: var(--mono-font);
+    font-size: 0.7rem;
+    padding: 0.25em 0.5em;
+}
+
+.terminal-card-body {
+    padding: 1rem;
+    background-color: #131313;
+}
+
+.system-info {
+    border-bottom: 1px solid #333;
+    padding-bottom: 5px;
+    font-family: var(--mono-font);
+    font-size: 0.8rem;
+}
+
+/* Code Examples */
+.code-examples {
+    margin-top: 1rem;
+}
+
+.code-example {
+    border: 1px solid #333;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.code-title {
+    background-color: #0c0c0c;
+    color: var(--hacker-primary);
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+    font-weight: bold;
+    border-bottom: 1px solid #333;
+}
+
+.code-content {
+    background-color: #131313;
+    padding: 0.5rem;
+    font-family: var(--mono-font);
+    font-size: 0.8rem;
+}
+
+.terminal-tip {
+    background-color: #131313;
+    border-left: 3px solid var(--hacker-primary);
 }
 
 /* Scanner styling */
 .host-row {
     cursor: pointer;
+    transition: background-color 0.15s ease-in-out;
 }
 
 .host-row:hover {
-    background-color: rgba(var(--bs-info-rgb), 0.1) !important;
+    background-color: rgba(5, 217, 232, 0.1) !important;
+}
+
+.host-row:active {
+    background-color: rgba(5, 217, 232, 0.2) !important;
 }
 
 /* IP address styling in various places */
 .ip-address {
-    font-family: 'Courier New', monospace;
+    font-family: var(--mono-font);
     font-weight: 600;
+    color: var(--hacker-primary);
 }
 
 /* Custom badge styling */
 .badge.bg-allow {
-    background-color: var(--bs-success);
+    background-color: var(--hacker-success);
+    color: #000;
 }
 
 .badge.bg-deny {
-    background-color: var(--bs-danger);
+    background-color: var(--hacker-danger);
 }
 
 /* Card hover effect for dashboard */
 .dashboard-card {
-    transition: transform 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
+    border: 1px solid #333;
+    background-color: var(--hacker-bg-medium);
 }
 
 .dashboard-card:hover {
     transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(5, 217, 232, 0.15);
+}
+
+/* Accordion customization */
+.accordion-item {
+    background-color: var(--hacker-bg-medium);
+    border: 1px solid #333;
+}
+
+.accordion-button {
+    background-color: #131313;
+    color: var(--hacker-text);
+}
+
+.accordion-button:not(.collapsed) {
+    background-color: #0c0c0c;
+    color: var(--hacker-primary);
+}
+
+.accordion-button:focus {
+    box-shadow: none;
+    border-color: var(--hacker-primary);
+}
+
+.accordion-button::after {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23ffffff'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+}
+
+.accordion-body {
+    background-color: #1a1a1a;
+}
+
+/* Progress/Status indicators */
+.status-indicator {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+.status-secure {
+    background-color: var(--hacker-success);
+    box-shadow: 0 0 5px var(--hacker-success);
+    animation: pulse 2s infinite;
+}
+
+.status-warning {
+    background-color: var(--hacker-warning);
+    box-shadow: 0 0 5px var(--hacker-warning);
+}
+
+.status-danger {
+    background-color: var(--hacker-danger);
+    box-shadow: 0 0 5px var(--hacker-danger);
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(0, 255, 65, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 5px rgba(0, 255, 65, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(0, 255, 65, 0);
+    }
 }
 
 /* Custom styling for tooltips */
@@ -68,10 +269,10 @@
 .custom-tooltip .tooltip-text {
     visibility: hidden;
     width: 200px;
-    background-color: #212529;
-    color: #f8f9fa;
+    background-color: #0c0c0c;
+    color: var(--hacker-text);
     text-align: center;
-    border-radius: 6px;
+    border-radius: 3px;
     padding: 5px;
     position: absolute;
     z-index: 1;
@@ -80,6 +281,7 @@
     margin-left: -100px;
     opacity: 0;
     transition: opacity 0.3s;
+    border: 1px solid var(--hacker-primary);
 }
 
 .custom-tooltip:hover .tooltip-text {
@@ -87,9 +289,43 @@
     opacity: 1;
 }
 
+/* Table styling */
+.table {
+    color: var(--hacker-text);
+    border-color: #333;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(5, 217, 232, 0.05);
+}
+
+/* Code styling */
+code {
+    color: var(--hacker-primary);
+    background-color: rgba(5, 217, 232, 0.1);
+    padding: 2px 4px;
+    border-radius: 3px;
+}
+
+/* Alert styling */
+.alert {
+    border-width: 1px;
+    border-style: solid;
+}
+
+.alert-dark {
+    background-color: #131313;
+    border-color: #333;
+    color: var(--hacker-text);
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
-    .terminal-output {
-        height: 300px;
+    .terminal-output, .hacker-terminal {
+        height: 350px;
+    }
+    
+    .code-content {
+        font-size: 0.7rem;
     }
 }
