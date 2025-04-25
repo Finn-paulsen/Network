@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 300 300">
+  <!-- Background -->
+  <rect width="300" height="300" fill="#1a1a2e"/>
+  
+  <!-- Person silhouette -->
+  <circle cx="150" cy="100" r="60" fill="#16213e"/>
+  <rect x="90" y="160" width="120" height="140" fill="#16213e"/>
+  
+  <!-- Hacker element (hoodie) -->
+  <path d="M90 120 L150 80 L210 120 L210 160 L90 160 Z" fill="#0f3460"/>
+  
+  <!-- Red Notice -->
+  <rect x="20" y="20" width="95" height="30" fill="#e94560"/>
+  <text x="30" y="42" font-family="Arial" font-size="16" font-weight="bold" fill="white">RED NOTICE</text>
+  
+  <!-- Cyber crime element (binary) -->
+  <text x="50" y="220" font-family="monospace" font-size="10" fill="#e94560">010101101101</text>
+  <text x="50" y="235" font-family="monospace" font-size="10" fill="#e94560">110010101010</text>
+  <text x="50" y="250" font-family="monospace" font-size="10" fill="#e94560">011101001010</text>
+  
+  <!-- Anonymous mask suggestion -->
+  <circle cx="150" cy="100" r="40" fill="#16213e" stroke="#e94560" stroke-width="1"/>
+  <path d="M130 100 Q150 120 170 100" fill="none" stroke="#e94560" stroke-width="1"/>
+  
+  <!-- ID Number -->
+  <text x="150" y="280" font-family="Arial" font-size="14" font-weight="bold" fill="white" text-anchor="middle">ID-000002</text>
+</svg>
