@@ -69,7 +69,8 @@ def logout():
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    return render_template('dashboard.html')
+    now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    return render_template('dashboard.html', now=now)
 
 @app.route('/scanner', methods=['GET', 'POST'])
 @login_required

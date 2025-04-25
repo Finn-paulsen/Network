@@ -17,14 +17,14 @@
         <div class="container">
             <a class="navbar-brand" href="{{ url_for('index') }}">
                 <i class="fas fa-shield-alt me-2"></i>
-                Netzwerksicherheits-Plattform
+                <span class="text-primary">Cyber</span>Security Platform
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
                     aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
+                <ul class="navbar-nav me-auto">
                     {% if current_user.is_authenticated %}
                     <li class="nav-item">
                         <a class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}" 
@@ -32,23 +32,71 @@
                             <i class="fas fa-tachometer-alt me-1"></i> Dashboard
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link {% if request.endpoint == 'scanner' %}active{% endif %}" 
-                           href="{{ url_for('scanner') }}">
-                            <i class="fas fa-search me-1"></i> Netzwerk-Scanner
+                    
+                    <!-- Network Tools Dropdown -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle {% if request.endpoint in ['scanner', 'terminal', 'firewall'] %}active{% endif %}" 
+                           href="#" id="networkDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-network-wired me-1"></i> Netzwerk-Tools
                         </a>
+                        <ul class="dropdown-menu bg-dark" aria-labelledby="networkDropdown">
+                            <li>
+                                <a class="dropdown-item text-light {% if request.endpoint == 'scanner' %}active{% endif %}" 
+                                   href="{{ url_for('scanner') }}">
+                                    <i class="fas fa-search me-1"></i> Netzwerk-Scanner
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item text-light {% if request.endpoint == 'terminal' %}active{% endif %}" 
+                                   href="{{ url_for('terminal') }}">
+                                    <i class="fas fa-terminal me-1"></i> Terminal
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item text-light {% if request.endpoint == 'firewall' %}active{% endif %}" 
+                                   href="{{ url_for('firewall') }}">
+                                    <i class="fas fa-fire me-1"></i> Firewall
+                                </a>
+                            </li>
+                        </ul>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link {% if request.endpoint == 'terminal' %}active{% endif %}" 
-                           href="{{ url_for('terminal') }}">
-                            <i class="fas fa-terminal me-1"></i> Terminal
+                    
+                    <!-- Security Tools Dropdown -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle {% if request.endpoint in ['brute_force', 'exploit_scanner', 'malware_simulator'] %}active{% endif %}" 
+                           href="#" id="securityDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-shield-alt me-1"></i> Hacking-Tools
                         </a>
+                        <ul class="dropdown-menu bg-dark" aria-labelledby="securityDropdown">
+                            <li>
+                                <a class="dropdown-item text-light {% if request.endpoint == 'brute_force' %}active{% endif %}" 
+                                   href="{{ url_for('brute_force') }}">
+                                    <i class="fas fa-key me-1"></i> Brute-Force Labor
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item text-light {% if request.endpoint == 'exploit_scanner' %}active{% endif %}" 
+                                   href="{{ url_for('exploit_scanner') }}">
+                                    <i class="fas fa-bug me-1"></i> Exploit Scanner
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item text-light {% if request.endpoint == 'malware_simulator' %}active{% endif %}" 
+                                   href="{{ url_for('malware_simulator') }}">
+                                    <i class="fas fa-virus me-1"></i> Malware Simulator
+                                </a>
+                            </li>
+                        </ul>
                     </li>
+                    {% endif %}
+                </ul>
+                
+                <ul class="navbar-nav">
+                    {% if current_user.is_authenticated %}
                     <li class="nav-item">
-                        <a class="nav-link {% if request.endpoint == 'firewall' %}active{% endif %}" 
-                           href="{{ url_for('firewall') }}">
-                            <i class="fas fa-fire me-1"></i> Firewall
-                        </a>
+                        <span class="nav-link">
+                            <i class="fas fa-user-shield me-1"></i> {{ current_user.username }}
+                        </span>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('logout') }}">

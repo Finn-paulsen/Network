@@ -3,128 +3,298 @@
 {% block content %}
 <div class="row mb-4">
     <div class="col-12">
-        <div class="card border-info">
-            <div class="card-header bg-info text-white">
-                <h2 class="mb-0">
-                    <i class="fas fa-tachometer-alt me-2"></i>Dashboard
-                </h2>
+        <div class="card border-dark hacker-card">
+            <div class="card-header bg-dark text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h2 class="mb-0">
+                        <i class="fas fa-tachometer-alt me-2"></i>Security Operations Center
+                    </h2>
+                    <div>
+                        <span class="badge bg-danger me-1 terminal-badge">CONFIDENTIAL</span>
+                        <span class="badge bg-success terminal-badge">SECURE</span>
+                    </div>
+                </div>
             </div>
             <div class="card-body">
-                <h4>Willkommen, {{ current_user.username }}!</h4>
+                <div class="d-flex align-items-center mb-3">
+                    <div class="status-indicator status-secure me-2"></div>
+                    <h4 class="mb-0">Willkommen, <span class="text-primary">{{ current_user.username }}</span></h4>
+                </div>
                 <p class="lead">
-                    Diese Plattform bietet verschiedene Netzwerksicherheits-Tools für Universitätszwecke.
+                    Diese Plattform bietet fortschrittliche Netzwerksicherheits-Tools für Forschungs- und Bildungszwecke.
                 </p>
-                <p>
-                    Wählen Sie eines der verfügbaren Tools aus dem Menü oder nutzen Sie die Schnellzugriffe unten.
-                </p>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="row g-4">
-    <!-- Network Scanner Card -->
-    <div class="col-md-4">
-        <div class="card h-100 border-primary">
-            <div class="card-header bg-primary text-white">
-                <h5 class="mb-0">
-                    <i class="fas fa-search me-2"></i>Netzwerk-Scanner
-                </h5>
-            </div>
-            <div class="card-body d-flex flex-column">
-                <p>
-                    Scannen Sie Ihr Netzwerk nach aktiven Hosts und offenen Ports.
-                    Analysieren Sie die gefundenen Geräte im Detail.
-                </p>
-                <div class="mt-auto">
-                    <a href="{{ url_for('scanner') }}" class="btn btn-primary w-100">
-                        <i class="fas fa-search me-2"></i>Zum Scanner
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Terminal Card -->
-    <div class="col-md-4">
-        <div class="card h-100 border-success">
-            <div class="card-header bg-success text-white">
-                <h5 class="mb-0">
-                    <i class="fas fa-terminal me-2"></i>Terminal
-                </h5>
-            </div>
-            <div class="card-body d-flex flex-column">
-                <p>
-                    Führen Sie Netzwerkbefehle direkt über das Terminal aus.
-                    Unterstützt werden ping, traceroute, nslookup und mehr.
-                </p>
-                <div class="mt-auto">
-                    <a href="{{ url_for('terminal') }}" class="btn btn-success w-100">
-                        <i class="fas fa-terminal me-2"></i>Zum Terminal
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Firewall Card -->
-    <div class="col-md-4">
-        <div class="card h-100 border-danger">
-            <div class="card-header bg-danger text-white">
-                <h5 class="mb-0">
-                    <i class="fas fa-fire me-2"></i>Firewall
-                </h5>
-            </div>
-            <div class="card-body d-flex flex-column">
-                <p>
-                    Verwalten Sie Firewall-Regeln, um den Netzwerkverkehr zu kontrollieren.
-                    Erstellen Sie Regeln zum Zulassen oder Blockieren von Verbindungen.
-                </p>
-                <div class="mt-auto">
-                    <a href="{{ url_for('firewall') }}" class="btn btn-danger w-100">
-                        <i class="fas fa-fire me-2"></i>Zur Firewall
-                    </a>
+                <div class="alert alert-dark terminal-tip">
+                    <i class="fas fa-info-circle me-2 text-primary"></i>
+                    Alle Tools sind ausschließlich für Bildungs- und Forschungszwecke konzipiert. Die Nutzung erfolgt unter Einhaltung ethischer Richtlinien.
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Security Tips -->
-<div class="row mt-4">
+<div class="row g-4 mb-4">
+    <div class="col-md-6">
+        <h4 class="mb-3 text-light"><i class="fas fa-tools me-2"></i>Netzwerk-Tools</h4>
+        <div class="row g-3">
+            <!-- Network Scanner Card -->
+            <div class="col-lg-6">
+                <div class="card dashboard-card border-dark hacker-card h-100">
+                    <div class="card-header bg-dark text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-search me-2"></i>Netzwerk-Scanner
+                        </h5>
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                        <div class="text-muted mb-2 small">
+                            <i class="fas fa-info-circle me-1"></i> Netzwerk-Discovery
+                        </div>
+                        <p class="small">
+                            Erkennen Sie aktive Hosts, offene Ports und relevante Services im Netzwerk.
+                        </p>
+                        <div class="mt-auto">
+                            <a href="{{ url_for('scanner') }}" class="btn btn-outline-primary w-100">
+                                <i class="fas fa-search me-2"></i>Scanner öffnen
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Terminal Card -->
+            <div class="col-lg-6">
+                <div class="card dashboard-card border-dark hacker-card h-100">
+                    <div class="card-header bg-dark text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-terminal me-2"></i>Advanced Terminal
+                        </h5>
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                        <div class="text-muted mb-2 small">
+                            <i class="fas fa-info-circle me-1"></i> Befehlsausführung
+                        </div>
+                        <p class="small">
+                            Führen Sie erweiterte Netzwerkbefehle aus: nmap, traceroute, dig und viele mehr.
+                        </p>
+                        <div class="mt-auto">
+                            <a href="{{ url_for('terminal') }}" class="btn btn-outline-success w-100">
+                                <i class="fas fa-terminal me-2"></i>Terminal öffnen
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Firewall Card -->
+            <div class="col-lg-6">
+                <div class="card dashboard-card border-dark hacker-card h-100">
+                    <div class="card-header bg-dark text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-fire me-2"></i>Firewall Manager
+                        </h5>
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                        <div class="text-muted mb-2 small">
+                            <i class="fas fa-info-circle me-1"></i> Zugriffssteuerung
+                        </div>
+                        <p class="small">
+                            Erstellen und verwalten Sie Regeln zur Kontrolle des Netzwerkverkehrs und zur Erhöhung der Sicherheit.
+                        </p>
+                        <div class="mt-auto">
+                            <a href="{{ url_for('firewall') }}" class="btn btn-outline-danger w-100">
+                                <i class="fas fa-fire me-2"></i>Firewall öffnen
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Vulnerability Scanner Card -->
+            <div class="col-lg-6">
+                <div class="card dashboard-card border-dark hacker-card h-100">
+                    <div class="card-header bg-dark text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-bug me-2"></i>Exploit Scanner
+                        </h5>
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                        <div class="text-warning mb-2 small">
+                            <i class="fas fa-info-circle me-1"></i> Schwachstellenanalyse
+                        </div>
+                        <p class="small">
+                            Simulieren Sie Schwachstellenscans für verschiedene Ziele und erhalten Sie detaillierte Sicherheitsberichte.
+                        </p>
+                        <div class="mt-auto">
+                            <a href="{{ url_for('exploit_scanner') }}" class="btn btn-outline-warning w-100">
+                                <i class="fas fa-bug me-2"></i>Scanner öffnen
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <h4 class="mb-3 text-light"><i class="fas fa-shield-alt me-2"></i>Security Research</h4>
+        <div class="row g-3">
+            <!-- Brute Force Card -->
+            <div class="col-lg-6">
+                <div class="card dashboard-card border-dark hacker-card h-100">
+                    <div class="card-header bg-dark text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-key me-2"></i>Brute Force Lab
+                        </h5>
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                        <div class="text-danger mb-2 small">
+                            <i class="fas fa-info-circle me-1"></i> Passwort-Sicherheit
+                        </div>
+                        <p class="small">
+                            Simulieren Sie Brute-Force-Angriffe auf verschiedene Ziele, um die Bedeutung starker Passwörter zu verstehen.
+                        </p>
+                        <div class="mt-auto">
+                            <a href="{{ url_for('brute_force') }}" class="btn btn-outline-info w-100">
+                                <i class="fas fa-key me-2"></i>Labor öffnen
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Malware Simulator Card -->
+            <div class="col-lg-6">
+                <div class="card dashboard-card border-dark hacker-card h-100">
+                    <div class="card-header bg-dark text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-virus me-2"></i>Malware Simulator
+                        </h5>
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                        <div class="text-danger mb-2 small">
+                            <i class="fas fa-info-circle me-1"></i> Threat Intelligence
+                        </div>
+                        <p class="small">
+                            Lernen Sie Verhaltensweisen verschiedener Malware-Typen durch sichere Simulationen kennen.
+                        </p>
+                        <div class="mt-auto">
+                            <a href="{{ url_for('malware_simulator') }}" class="btn btn-outline-secondary w-100">
+                                <i class="fas fa-virus me-2"></i>Simulator öffnen
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Activity Monitor Card -->
+            <div class="col-lg-12">
+                <div class="card border-dark hacker-card">
+                    <div class="card-header bg-dark text-white">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">
+                                <i class="fas fa-chart-line me-2"></i>System Status
+                            </h5>
+                            <small class="text-muted">Live</small>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="status-item mb-3">
+                                    <div class="d-flex align-items-center">
+                                        <div class="status-indicator status-secure me-2"></div>
+                                        <div class="status-label">Network</div>
+                                    </div>
+                                    <div class="progress mt-1" style="height: 5px;">
+                                        <div class="progress-bar bg-success" style="width: 85%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="status-item mb-3">
+                                    <div class="d-flex align-items-center">
+                                        <div class="status-indicator status-warning me-2"></div>
+                                        <div class="status-label">CPU Usage</div>
+                                    </div>
+                                    <div class="progress mt-1" style="height: 5px;">
+                                        <div class="progress-bar bg-warning" style="width: 65%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="status-item mb-3">
+                                    <div class="d-flex align-items-center">
+                                        <div class="status-indicator status-secure me-2"></div>
+                                        <div class="status-label">Memory</div>
+                                    </div>
+                                    <div class="progress mt-1" style="height: 5px;">
+                                        <div class="progress-bar bg-info" style="width: 45%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="system-log mt-2">
+                            <div class="log-title d-flex justify-content-between">
+                                <div><i class="fas fa-history me-1"></i> Letzte Aktivitäten</div>
+                                <div><small class="text-muted">Automatisch aktualisiert</small></div>
+                            </div>
+                            <div class="log-content">
+                                <div class="log-entry">
+                                    <span class="time">{{ current_user.username }} hat sich angemeldet</span>
+                                    <span class="details text-muted">{{ now }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Security Advisory -->
+<div class="row">
     <div class="col-12">
-        <div class="card border-warning">
-            <div class="card-header bg-warning text-dark">
+        <div class="card border-dark hacker-card">
+            <div class="card-header bg-dark text-white">
                 <h5 class="mb-0">
-                    <i class="fas fa-lightbulb me-2"></i>Sicherheitstipps
+                    <i class="fas fa-shield-alt me-2"></i>Sicherheitshinweise
                 </h5>
             </div>
             <div class="card-body">
                 <div class="row">
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <div class="d-flex align-items-start mb-3">
-                            <i class="fas fa-lock text-warning fs-4 me-2 mt-1"></i>
+                            <i class="fas fa-lock text-primary fs-4 me-2 mt-1"></i>
                             <div>
-                                <h6>Starke Passwörter</h6>
-                                <p class="small mb-0">Verwenden Sie komplexe Passwörter mit Sonderzeichen und Zahlen.</p>
+                                <h6>Komplexe Passwörter</h6>
+                                <p class="small mb-0">Verwenden Sie lange Passwörter mit Buchstaben, Zahlen und Sonderzeichen.</p>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <div class="d-flex align-items-start mb-3">
-                            <i class="fas fa-shield-alt text-warning fs-4 me-2 mt-1"></i>
+                            <i class="fas fa-shield-alt text-primary fs-4 me-2 mt-1"></i>
                             <div>
                                 <h6>Regelmäßige Updates</h6>
-                                <p class="small mb-0">Halten Sie Ihr System und Ihre Software stets aktuell.</p>
+                                <p class="small mb-0">Halten Sie Betriebssysteme und Software durch regelmäßige Updates geschützt.</p>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <div class="d-flex align-items-start mb-3">
-                            <i class="fas fa-eye-slash text-warning fs-4 me-2 mt-1"></i>
+                            <i class="fas fa-eye-slash text-primary fs-4 me-2 mt-1"></i>
                             <div>
-                                <h6>Vorsicht bei öffentlichen WLANs</h6>
-                                <p class="small mb-0">Nutzen Sie VPNs in öffentlichen Netzwerken.</p>
+                                <h6>VPN-Nutzung</h6>
+                                <p class="small mb-0">Nutzen Sie VPNs in öffentlichen Netzwerken zum Schutz Ihrer Verbindung.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="d-flex align-items-start mb-3">
+                            <i class="fas fa-user-shield text-primary fs-4 me-2 mt-1"></i>
+                            <div>
+                                <h6>Multi-Faktor-Authentifizierung</h6>
+                                <p class="small mb-0">Aktivieren Sie MFA für zusätzliche Sicherheitsebenen bei wichtigen Accounts.</p>
                             </div>
                         </div>
                     </div>
@@ -133,4 +303,67 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Aktuelles Datum für Systemlog
+    const now = new Date();
+    const timeString = now.toLocaleTimeString();
+    const dateString = now.toLocaleDateString();
+    
+    const logTimeElements = document.querySelectorAll('.log-entry .details');
+    logTimeElements.forEach(element => {
+        element.textContent = dateString + ' ' + timeString;
+    });
+});
+</script>
+<style>
+.status-item {
+    padding-bottom: 0.5rem;
+}
+
+.status-label {
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.system-log {
+    border: 1px solid #333;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.log-title {
+    background-color: #131313;
+    padding: 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    border-bottom: 1px solid #333;
+}
+
+.log-content {
+    background-color: #0c0c0c;
+    padding: 0.5rem;
+    font-family: var(--mono-font);
+    font-size: 0.8rem;
+    max-height: 100px;
+    overflow-y: auto;
+}
+
+.log-entry {
+    padding: 0.25rem 0;
+    display: flex;
+    justify-content: space-between;
+}
+
+.log-entry .time {
+    color: var(--hacker-primary);
+}
+
+.log-entry .details {
+    font-size: 0.75rem;
+}
+</style>
 {% endblock %}
