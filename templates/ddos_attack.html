@@ -1,0 +1,1252 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-dark hacker-card">
+            <div class="card-header bg-dark text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h2 class="mb-0">
+                        <i class="fas fa-server me-2"></i>DDoS Angriffsimulator
+                    </h2>
+                    <div class="d-flex align-items-center">
+                        <div class="status-indicator status-danger blink-slow me-2"></div>
+                        <span class="badge bg-danger terminal-badge">GEFÄHRLICH</span>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-danger">
+                    <div class="d-flex">
+                        <i class="fas fa-exclamation-triangle fs-4 me-3"></i>
+                        <div>
+                            <h5 class="alert-heading">WICHTIGER HINWEIS</h5>
+                            <p class="mb-0">Diese Anwendung simuliert lediglich DDoS-Angriffe zu Bildungszwecken. Es werden <strong>keine echten Angriffe</strong> durchgeführt. Die Durchführung echter DDoS-Angriffe ist illegal und kann zu strafrechtlichen Konsequenzen führen.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-5">
+                        <!-- Target Selection Form -->
+                        <div class="card border-dark mb-4" id="targetSelectionForm">
+                            <div class="card-header bg-dark text-white">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-crosshairs me-2"></i>Zielauswahl
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <form id="attackForm">
+                                    <div class="mb-3">
+                                        <label for="targetSelect" class="form-label">Ziel auswählen</label>
+                                        <select class="form-select terminal-input" id="targetSelect">
+                                            <option value="" selected disabled>--- Ziel auswählen ---</option>
+                                            {% for target in targets %}
+                                            <option value="{{ target.id }}" 
+                                                    data-url="{{ target.target_url }}" 
+                                                    data-ip="{{ target.ip_address }}" 
+                                                    data-port="{{ target.port }}" 
+                                                    data-protocol="{{ target.protocol }}" 
+                                                    data-type="{{ target.target_type }}"
+                                                    data-vuln="{{ target.vulnerability_level }}">
+                                                {{ target.target_name }} ({{ target.target_type }})
+                                            </option>
+                                            {% endfor %}
+                                            <option value="custom">Benutzerdefiniertes Ziel...</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div id="customTargetFields" style="display: none;">
+                                        <div class="mb-3">
+                                            <label for="customTargetName" class="form-label">Zielname</label>
+                                            <input type="text" class="form-control terminal-input" id="customTargetName" placeholder="z.B. Test Website">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="customTargetUrl" class="form-label">Ziel-URL</label>
+                                            <input type="text" class="form-control terminal-input" id="customTargetUrl" placeholder="z.B. https://example.com">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="customTargetIp" class="form-label">IP-Adresse (optional)</label>
+                                            <input type="text" class="form-control terminal-input" id="customTargetIp" placeholder="z.B. 192.168.1.1">
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="customTargetPort" class="form-label">Port</label>
+                                                    <input type="number" class="form-control terminal-input" id="customTargetPort" value="80">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="customTargetProtocol" class="form-label">Protokoll</label>
+                                                    <select class="form-select terminal-input" id="customTargetProtocol">
+                                                        <option value="HTTP">HTTP</option>
+                                                        <option value="HTTPS">HTTPS</option>
+                                                        <option value="TCP">TCP</option>
+                                                        <option value="UDP">UDP</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="attackMethod" class="form-label">Angriffsmethode</label>
+                                        <select class="form-select terminal-input" id="attackMethod">
+                                            <option value="syn_flood">SYN Flood</option>
+                                            <option value="http_flood">HTTP Flood</option>
+                                            <option value="udp_flood">UDP Flood</option>
+                                            <option value="ping_flood">ICMP/Ping Flood</option>
+                                            <option value="slowloris">Slowloris</option>
+                                            <option value="amplification">DNS Amplification</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="attackIntensity" class="form-label">Angriffsintensität</label>
+                                        <div class="d-flex align-items-center">
+                                            <input type="range" class="form-range flex-grow-1 me-2" id="attackIntensity" min="1" max="5" value="3">
+                                            <span id="intensityValue" class="badge bg-warning">Mittel (3)</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="attackDuration" class="form-label">Dauer (Sekunden)</label>
+                                        <input type="number" class="form-control terminal-input" id="attackDuration" min="5" max="60" value="15">
+                                    </div>
+                                    
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="checkbox" id="useBotnets" checked>
+                                        <label class="form-check-label" for="useBotnets">
+                                            Verteiltes Botnet simulieren
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="d-grid mt-4">
+                                        <button type="button" class="btn btn-danger btn-lg" id="startAttackButton">
+                                            <i class="fas fa-skull me-2"></i>Angriff starten
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        
+                        <!-- Target Info -->
+                        <div class="card border-dark" id="targetInfoCard">
+                            <div class="card-header bg-dark text-white">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-info-circle me-2"></i>Zielinformationen
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="target-details">
+                                    <div class="mb-2 d-flex justify-content-between">
+                                        <span class="detail-label">Ziel-URL:</span>
+                                        <span class="detail-value" id="targetUrlDisplay">-</span>
+                                    </div>
+                                    <div class="mb-2 d-flex justify-content-between">
+                                        <span class="detail-label">IP-Adresse:</span>
+                                        <span class="detail-value" id="targetIpDisplay">-</span>
+                                    </div>
+                                    <div class="mb-2 d-flex justify-content-between">
+                                        <span class="detail-label">Port:</span>
+                                        <span class="detail-value" id="targetPortDisplay">-</span>
+                                    </div>
+                                    <div class="mb-2 d-flex justify-content-between">
+                                        <span class="detail-label">Protokoll:</span>
+                                        <span class="detail-value" id="targetProtocolDisplay">-</span>
+                                    </div>
+                                    <div class="mb-2 d-flex justify-content-between">
+                                        <span class="detail-label">Verwundbarkeit:</span>
+                                        <span class="detail-value" id="targetVulnDisplay">-</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="vulnerability-chart mt-3">
+                                    <h6 class="mb-2">Angriffssimulationswahrscheinlichkeit</h6>
+                                    <div class="progress" style="height: 8px;">
+                                        <div class="progress-bar bg-success" id="successChanceBar" style="width: 0%"></div>
+                                    </div>
+                                    <div class="d-flex justify-content-between mt-1">
+                                        <small class="text-muted">Niedrig</small>
+                                        <small class="text-muted">Hoch</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-7">
+                        <!-- Attack Console -->
+                        <div class="card border-dark mb-4" id="attackConsoleCard" style="display: none;">
+                            <div class="card-header bg-dark text-white">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-terminal me-2"></i>Angriffskonsole
+                                    </h5>
+                                    <div>
+                                        <span class="badge bg-danger blink-badge" id="liveStatus">ANGRIFF LÄUFT</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="attack-status mb-3">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>Status:</span>
+                                        <span id="attackStatusDisplay" class="text-warning">Initialisiere...</span>
+                                    </div>
+                                    <div class="progress mb-3" style="height: 20px;">
+                                        <div id="attackProgressBar" class="progress-bar progress-bar-striped progress-bar-animated bg-danger" style="width: 0%">
+                                            <span id="attackProgressText">0%</span>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-2">
+                                        <div class="col-6">
+                                            <span>Verstrichene Zeit:</span>
+                                            <span id="elapsedTimeDisplay" class="text-info ms-2">00:00</span>
+                                        </div>
+                                        <div class="col-6 text-end">
+                                            <span>Verbleibende Zeit:</span>
+                                            <span id="remainingTimeDisplay" class="text-info ms-2">00:00</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="attack-metrics mb-3">
+                                    <div class="row metrics-row">
+                                        <div class="col-md-6">
+                                            <div class="metric-card mb-3">
+                                                <div class="metric-title">Pakete gesendet</div>
+                                                <div class="metric-value" id="packetsSentDisplay">0</div>
+                                                <div class="metric-unit">Pakete</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="metric-card mb-3">
+                                                <div class="metric-title">Bandbreite</div>
+                                                <div class="metric-value" id="bandwidthDisplay">0</div>
+                                                <div class="metric-unit">Mbps</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="metric-card">
+                                                <div class="metric-title">Aktive Bots</div>
+                                                <div class="metric-value" id="activeBotsDisplay">0</div>
+                                                <div class="metric-unit">Verbindungen</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="metric-card">
+                                                <div class="metric-title">Server-Antwortzeit</div>
+                                                <div class="metric-value" id="serverResponseDisplay">0</div>
+                                                <div class="metric-unit">ms</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="attack-log-container">
+                                    <div class="log-header">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span><i class="fas fa-list-alt me-1"></i> Angriffsprotokoll</span>
+                                            <span class="log-time" id="logTimeDisplay">00:00:00</span>
+                                        </div>
+                                    </div>
+                                    <div class="attack-log" id="attackLogContainer">
+                                        <div class="log-entry"><span class="log-time-entry">00:00:00</span> <span class="text-muted">[System]</span> DDoS-Angriffsimulator initialisiert...</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="text-center mt-3">
+                                    <button type="button" class="btn btn-danger" id="stopAttackButton">
+                                        <i class="fas fa-stop-circle me-2"></i>Angriff abbrechen
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Attack Results -->
+                        <div class="card border-dark" id="attackResultsCard" style="display: none;">
+                            <div class="card-header bg-dark text-white">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-chart-bar me-2"></i>Angriffsergebnisse
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="result-summary mb-4">
+                                    <div class="text-center mb-3">
+                                        <div id="resultIcon" class="result-icon mb-2">
+                                            <i class="fas fa-check-circle text-success fa-4x"></i>
+                                        </div>
+                                        <h4 id="resultTitle" class="text-success">Angriff erfolgreich!</h4>
+                                        <p id="resultDescription" class="text-muted">Der simulierte DDoS-Angriff wurde erfolgreich durchgeführt und das Ziel wurde offline genommen.</p>
+                                    </div>
+                                    
+                                    <div class="result-stats">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="stat-item">
+                                                    <div class="stat-label">Angegriffenes Ziel</div>
+                                                    <div class="stat-value" id="resultTargetDisplay">-</div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="stat-item">
+                                                    <div class="stat-label">Angriffsmethode</div>
+                                                    <div class="stat-value" id="resultMethodDisplay">-</div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="stat-item">
+                                                    <div class="stat-label">Dauer</div>
+                                                    <div class="stat-value" id="resultDurationDisplay">-</div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="stat-item">
+                                                    <div class="stat-label">Erfolgsrate</div>
+                                                    <div class="stat-value" id="resultSuccessRateDisplay">-</div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="stat-item">
+                                                    <div class="stat-label">Pakete gesendet</div>
+                                                    <div class="stat-value" id="resultPacketsDisplay">-</div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="stat-item">
+                                                    <div class="stat-label">Maximale Bandbreite</div>
+                                                    <div class="stat-value" id="resultBandwidthDisplay">-</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="server-response-graph mb-3">
+                                    <h6>Server-Antwortzeit während des Angriffs</h6>
+                                    <div class="response-graph-container">
+                                        <div class="response-graph">
+                                            <div class="graph-y-axis">
+                                                <div>1000ms</div>
+                                                <div>500ms</div>
+                                                <div>200ms</div>
+                                                <div>50ms</div>
+                                                <div>0ms</div>
+                                            </div>
+                                            <div class="graph-content" id="responseGraphContent">
+                                                <!-- Graph bars will be generated by JavaScript -->
+                                            </div>
+                                        </div>
+                                        <div class="graph-x-axis">
+                                            <div>Start</div>
+                                            <div>Zeit</div>
+                                            <div>Ende</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="vulnerability-analysis">
+                                    <h6>Schwachstellenanalyse</h6>
+                                    <div class="table-responsive">
+                                        <table class="table table-dark table-hover table-sm vuln-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Schwachstelle</th>
+                                                    <th>Risiko</th>
+                                                    <th>Empfehlung</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="vulnTableBody">
+                                                <!-- Vulnerability rows will be generated by JavaScript -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                
+                                <div class="text-center mt-4">
+                                    <button type="button" class="btn btn-primary" id="newAttackButton">
+                                        <i class="fas fa-sync-alt me-2"></i>Neuen Angriff starten
+                                    </button>
+                                    <button type="button" class="btn btn-outline-danger ms-2" id="downloadReportButton">
+                                        <i class="fas fa-file-download me-2"></i>Bericht herunterladen
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Elements
+    const targetSelect = document.getElementById('targetSelect');
+    const customTargetFields = document.getElementById('customTargetFields');
+    const attackIntensity = document.getElementById('attackIntensity');
+    const intensityValue = document.getElementById('intensityValue');
+    const startAttackButton = document.getElementById('startAttackButton');
+    const stopAttackButton = document.getElementById('stopAttackButton');
+    const newAttackButton = document.getElementById('newAttackButton');
+    const downloadReportButton = document.getElementById('downloadReportButton');
+    
+    // Display elements
+    const targetUrlDisplay = document.getElementById('targetUrlDisplay');
+    const targetIpDisplay = document.getElementById('targetIpDisplay');
+    const targetPortDisplay = document.getElementById('targetPortDisplay');
+    const targetProtocolDisplay = document.getElementById('targetProtocolDisplay');
+    const targetVulnDisplay = document.getElementById('targetVulnDisplay');
+    const successChanceBar = document.getElementById('successChanceBar');
+    
+    // Cards
+    const targetSelectionForm = document.getElementById('targetSelectionForm');
+    const attackConsoleCard = document.getElementById('attackConsoleCard');
+    const attackResultsCard = document.getElementById('attackResultsCard');
+    
+    // Attack console elements
+    const attackStatusDisplay = document.getElementById('attackStatusDisplay');
+    const attackProgressBar = document.getElementById('attackProgressBar');
+    const attackProgressText = document.getElementById('attackProgressText');
+    const elapsedTimeDisplay = document.getElementById('elapsedTimeDisplay');
+    const remainingTimeDisplay = document.getElementById('remainingTimeDisplay');
+    const packetsSentDisplay = document.getElementById('packetsSentDisplay');
+    const bandwidthDisplay = document.getElementById('bandwidthDisplay');
+    const activeBotsDisplay = document.getElementById('activeBotsDisplay');
+    const serverResponseDisplay = document.getElementById('serverResponseDisplay');
+    const attackLogContainer = document.getElementById('attackLogContainer');
+    const logTimeDisplay = document.getElementById('logTimeDisplay');
+    
+    // Result elements
+    const resultTargetDisplay = document.getElementById('resultTargetDisplay');
+    const resultMethodDisplay = document.getElementById('resultMethodDisplay');
+    const resultDurationDisplay = document.getElementById('resultDurationDisplay');
+    const resultSuccessRateDisplay = document.getElementById('resultSuccessRateDisplay');
+    const resultPacketsDisplay = document.getElementById('resultPacketsDisplay');
+    const resultBandwidthDisplay = document.getElementById('resultBandwidthDisplay');
+    const resultIcon = document.getElementById('resultIcon');
+    const resultTitle = document.getElementById('resultTitle');
+    const resultDescription = document.getElementById('resultDescription');
+    const responseGraphContent = document.getElementById('responseGraphContent');
+    const vulnTableBody = document.getElementById('vulnTableBody');
+    
+    // Variables
+    let attackTimer = null;
+    let attackInterval = null;
+    let elapsedSeconds = 0;
+    let totalSeconds = 0;
+    let responseTimeData = [];
+    let packetsSent = 0;
+    let bandwidth = 0;
+    let activeBots = 0;
+    let serverResponse = 0;
+    
+    // Attack method names
+    const attackMethodNames = {
+        'syn_flood': 'SYN Flood',
+        'http_flood': 'HTTP Flood',
+        'udp_flood': 'UDP Flood',
+        'ping_flood': 'ICMP/Ping Flood',
+        'slowloris': 'Slowloris',
+        'amplification': 'DNS Amplification'
+    };
+    
+    // Event: Target selection change
+    targetSelect.addEventListener('change', function() {
+        if (this.value === 'custom') {
+            customTargetFields.style.display = 'block';
+            updateTargetInfo(null);
+        } else if (this.value !== '') {
+            customTargetFields.style.display = 'none';
+            const selectedOption = this.options[this.selectedIndex];
+            const targetData = {
+                url: selectedOption.dataset.url,
+                ip: selectedOption.dataset.ip,
+                port: selectedOption.dataset.port,
+                protocol: selectedOption.dataset.protocol,
+                type: selectedOption.dataset.type,
+                vuln: selectedOption.dataset.vuln
+            };
+            updateTargetInfo(targetData);
+        } else {
+            customTargetFields.style.display = 'none';
+            updateTargetInfo(null);
+        }
+    });
+    
+    // Event: Attack intensity change
+    attackIntensity.addEventListener('input', function() {
+        const value = this.value;
+        let intensityText;
+        let intensityClass;
+        
+        switch (parseInt(value)) {
+            case 1:
+                intensityText = 'Sehr Niedrig (1)';
+                intensityClass = 'bg-info';
+                break;
+            case 2:
+                intensityText = 'Niedrig (2)';
+                intensityClass = 'bg-primary';
+                break;
+            case 3:
+                intensityText = 'Mittel (3)';
+                intensityClass = 'bg-warning';
+                break;
+            case 4:
+                intensityText = 'Hoch (4)';
+                intensityClass = 'bg-danger';
+                break;
+            case 5:
+                intensityText = 'Sehr Hoch (5)';
+                intensityClass = 'bg-danger';
+                break;
+            default:
+                intensityText = 'Mittel (3)';
+                intensityClass = 'bg-warning';
+        }
+        
+        intensityValue.textContent = intensityText;
+        intensityValue.className = `badge ${intensityClass}`;
+    });
+    
+    // Event: Start attack button click
+    startAttackButton.addEventListener('click', function() {
+        // Validate target selection
+        if (targetSelect.value === '') {
+            alert('Bitte wählen Sie ein Ziel aus.');
+            return;
+        }
+        
+        // Get attack parameters
+        const selectedTarget = targetSelect.options[targetSelect.selectedIndex].text;
+        const attackMethod = document.getElementById('attackMethod').value;
+        const attackDuration = parseInt(document.getElementById('attackDuration').value);
+        const intensity = parseInt(attackIntensity.value);
+        const useBotnets = document.getElementById('useBotnets').checked;
+        
+        // Initialize attack
+        totalSeconds = attackDuration;
+        elapsedSeconds = 0;
+        packetsSent = 0;
+        bandwidth = 0;
+        activeBots = 0;
+        serverResponse = 50; // Initial response time in ms
+        responseTimeData = [];
+        
+        // Hide form, show console
+        targetSelectionForm.style.display = 'none';
+        attackConsoleCard.style.display = 'block';
+        attackResultsCard.style.display = 'none';
+        
+        // Update attack status
+        attackStatusDisplay.textContent = 'Initialisiere...';
+        attackStatusDisplay.className = 'text-warning';
+        attackProgressBar.style.width = '0%';
+        attackProgressText.textContent = '0%';
+        elapsedTimeDisplay.textContent = '00:00';
+        remainingTimeDisplay.textContent = formatTime(totalSeconds);
+        
+        // Clear log
+        attackLogContainer.innerHTML = '';
+        addLogEntry('System', 'DDoS-Angriffsimulator initialisiert...');
+        addLogEntry('System', `Ziel: ${selectedTarget}`);
+        addLogEntry('System', `Methode: ${attackMethodNames[attackMethod]}`);
+        addLogEntry('System', `Dauer: ${attackDuration} Sekunden`);
+        addLogEntry('System', `Intensität: ${intensity}/5`);
+        
+        // Start the attack simulation
+        setTimeout(() => {
+            attackStatusDisplay.textContent = 'Verbinde mit Botnet...';
+            addLogEntry('System', 'Verbinde mit verteiltem Botnet...');
+            
+            setTimeout(() => {
+                if (useBotnets) {
+                    const botCount = intensity * 50 + Math.floor(Math.random() * 100);
+                    activeBots = botCount;
+                    activeBotsDisplay.textContent = botCount.toLocaleString();
+                    addLogEntry('Botnet', `${botCount} Bots verbunden und bereit.`);
+                }
+                
+                setTimeout(() => {
+                    attackStatusDisplay.textContent = 'Angriff läuft';
+                    attackStatusDisplay.className = 'text-danger';
+                    addLogEntry('Attack', `${attackMethodNames[attackMethod]} Angriff gestartet!`);
+                    
+                    // Start attack timer
+                    startAttackTimer();
+                    
+                    // Simulate attack metrics
+                    attackInterval = setInterval(() => {
+                        updateAttackMetrics(intensity, attackMethod);
+                    }, 1000);
+                }, 1500);
+            }, 2000);
+        }, 1000);
+        
+        // Save attack parameters for results
+        resultTargetDisplay.textContent = selectedTarget;
+        resultMethodDisplay.textContent = attackMethodNames[attackMethod];
+        resultDurationDisplay.textContent = `${attackDuration} Sekunden`;
+    });
+    
+    // Event: Stop attack button click
+    stopAttackButton.addEventListener('click', function() {
+        if (attackTimer) {
+            clearInterval(attackTimer);
+            attackTimer = null;
+        }
+        if (attackInterval) {
+            clearInterval(attackInterval);
+            attackInterval = null;
+        }
+        
+        addLogEntry('System', 'Angriff manuell abgebrochen.');
+        showResults(false);
+    });
+    
+    // Event: New attack button click
+    newAttackButton.addEventListener('click', function() {
+        targetSelectionForm.style.display = 'block';
+        attackConsoleCard.style.display = 'none';
+        attackResultsCard.style.display = 'none';
+    });
+    
+    // Event: Download report button click
+    downloadReportButton.addEventListener('click', function() {
+        alert('Angriffsbericht wurde generiert und steht zum Download bereit.');
+    });
+    
+    // Function: Update target information display
+    function updateTargetInfo(targetData) {
+        if (targetData) {
+            targetUrlDisplay.textContent = targetData.url || '-';
+            targetIpDisplay.textContent = targetData.ip || '-';
+            targetPortDisplay.textContent = targetData.port || '-';
+            targetProtocolDisplay.textContent = targetData.protocol || '-';
+            
+            // Display vulnerability level
+            const vulnLevel = parseInt(targetData.vuln) || 1;
+            let vulnText, vulnClass;
+            
+            switch (vulnLevel) {
+                case 1:
+                    vulnText = 'Sehr Niedrig (1)';
+                    vulnClass = 'text-success';
+                    break;
+                case 2:
+                    vulnText = 'Niedrig (2)';
+                    vulnClass = 'text-info';
+                    break;
+                case 3:
+                    vulnText = 'Mittel (3)';
+                    vulnClass = 'text-warning';
+                    break;
+                case 4:
+                    vulnText = 'Hoch (4)';
+                    vulnClass = 'text-danger';
+                    break;
+                case 5:
+                    vulnText = 'Sehr Hoch (5)';
+                    vulnClass = 'text-danger';
+                    break;
+                default:
+                    vulnText = 'Unbekannt';
+                    vulnClass = 'text-muted';
+            }
+            
+            targetVulnDisplay.textContent = vulnText;
+            targetVulnDisplay.className = 'detail-value ' + vulnClass;
+            
+            // Update success chance bar
+            const successChance = (vulnLevel / 5) * 100;
+            successChanceBar.style.width = `${successChance}%`;
+            if (successChance < 30) {
+                successChanceBar.className = 'progress-bar bg-success';
+            } else if (successChance < 70) {
+                successChanceBar.className = 'progress-bar bg-warning';
+            } else {
+                successChanceBar.className = 'progress-bar bg-danger';
+            }
+        } else {
+            // Reset values if no target is selected
+            targetUrlDisplay.textContent = '-';
+            targetIpDisplay.textContent = '-';
+            targetPortDisplay.textContent = '-';
+            targetProtocolDisplay.textContent = '-';
+            targetVulnDisplay.textContent = '-';
+            targetVulnDisplay.className = 'detail-value';
+            successChanceBar.style.width = '0%';
+        }
+    }
+    
+    // Function: Start attack timer
+    function startAttackTimer() {
+        elapsedSeconds = 0;
+        
+        attackTimer = setInterval(() => {
+            elapsedSeconds++;
+            
+            // Update time displays
+            elapsedTimeDisplay.textContent = formatTime(elapsedSeconds);
+            remainingTimeDisplay.textContent = formatTime(Math.max(0, totalSeconds - elapsedSeconds));
+            
+            // Update progress bar
+            const progress = Math.min(100, (elapsedSeconds / totalSeconds) * 100);
+            attackProgressBar.style.width = `${progress}%`;
+            attackProgressText.textContent = `${progress.toFixed(0)}%`;
+            
+            // Update log time
+            const now = new Date();
+            logTimeDisplay.textContent = formatLogTime(now);
+            
+            // Check if attack is complete
+            if (elapsedSeconds >= totalSeconds) {
+                clearInterval(attackTimer);
+                attackTimer = null;
+                clearInterval(attackInterval);
+                attackInterval = null;
+                
+                addLogEntry('System', 'Angriff abgeschlossen!');
+                
+                // Show results
+                showResults(true);
+            }
+        }, 1000);
+    }
+    
+    // Function: Update attack metrics
+    function updateAttackMetrics(intensity, attackMethod) {
+        // Simulate packets sent
+        const basePacketRate = intensity * 10000;
+        const packetVariation = basePacketRate * 0.2; // 20% variation
+        const packetsPerSecond = basePacketRate + Math.floor((Math.random() * packetVariation) - (packetVariation / 2));
+        packetsSent += packetsPerSecond;
+        packetsSentDisplay.textContent = packetsSent.toLocaleString();
+        
+        // Simulate bandwidth
+        const baseBandwidth = intensity * 50; // In Mbps
+        const bandwidthVariation = baseBandwidth * 0.15; // 15% variation
+        bandwidth = baseBandwidth + (Math.random() * bandwidthVariation) - (bandwidthVariation / 2);
+        bandwidthDisplay.textContent = bandwidth.toFixed(2);
+        
+        // Simulate server response time
+        const baseServerResponse = 50; // Base response time in ms
+        const attackImpact = (elapsedSeconds / totalSeconds) * intensity * 200; // Increasing impact over time
+        
+        // Different attack methods affect response time differently
+        let methodMultiplier = 1;
+        switch (attackMethod) {
+            case 'syn_flood':
+                methodMultiplier = 1.2;
+                break;
+            case 'http_flood':
+                methodMultiplier = 1.5;
+                break;
+            case 'slowloris':
+                methodMultiplier = 2.0;
+                break;
+            case 'amplification':
+                methodMultiplier = 1.8;
+                break;
+            default:
+                methodMultiplier = 1.0;
+        }
+        
+        serverResponse = baseServerResponse + (attackImpact * methodMultiplier);
+        
+        // Add random spikes
+        if (Math.random() < 0.1) {
+            serverResponse *= (1 + Math.random());
+        }
+        
+        // Check for "server down" conditions
+        if (elapsedSeconds > totalSeconds * 0.7 && intensity >= 4 && Math.random() < 0.3) {
+            serverResponse = -1; // Indicate server is down
+        }
+        
+        // Update display
+        if (serverResponse < 0) {
+            serverResponseDisplay.textContent = "TIMEOUT";
+            serverResponseDisplay.className = "metric-value text-danger";
+        } else {
+            serverResponseDisplay.textContent = Math.round(serverResponse);
+            serverResponseDisplay.className = "metric-value";
+        }
+        
+        // Save data for the graph
+        responseTimeData.push(serverResponse);
+        
+        // Update active bots (some might disconnect/reconnect)
+        if (Math.random() < 0.2) {
+            const botChange = Math.floor(Math.random() * 10) - 5;
+            activeBots = Math.max(0, activeBots + botChange);
+            activeBotsDisplay.textContent = activeBots.toLocaleString();
+        }
+        
+        // Add periodic log entries
+        if (Math.random() < 0.3) {
+            if (serverResponse < 0) {
+                addLogEntry('Status', 'Ziel reagiert nicht mehr auf Anfragen!', 'text-danger');
+            } else if (serverResponse > 500) {
+                addLogEntry('Status', `Ziel zeigt erhebliche Verzögerungen (${Math.round(serverResponse)}ms)`, 'text-warning');
+            } else if (elapsedSeconds % 5 === 0) {
+                addLogEntry('Info', `Bandbreite: ${bandwidth.toFixed(2)} Mbps, Pakete: ${packetsPerSecond.toLocaleString()}/s`);
+            }
+        }
+    }
+    
+    // Function: Show attack results
+    function showResults(success) {
+        // Hide attack console
+        attackConsoleCard.style.display = 'none';
+        
+        // Show results card
+        attackResultsCard.style.display = 'block';
+        
+        // Calculate success rate (based on elapsed time and other factors)
+        let successRate = 0;
+        if (success) {
+            // Full attack completed
+            const intensity = parseInt(attackIntensity.value);
+            const targetVuln = targetSelect.value !== 'custom' ? 
+                parseInt(targetSelect.options[targetSelect.selectedIndex].dataset.vuln) || 3 : 
+                3;
+            
+            // Success rate calculation
+            successRate = Math.min(100, (intensity / 5) * 100 * (targetVuln / 3) * (elapsedSeconds / totalSeconds));
+        } else {
+            // Attack was stopped early
+            successRate = Math.min(100, (elapsedSeconds / totalSeconds) * 50);
+        }
+        
+        // Update result metrics
+        resultSuccessRateDisplay.textContent = `${successRate.toFixed(1)}%`;
+        resultPacketsDisplay.textContent = packetsSent.toLocaleString();
+        resultBandwidthDisplay.textContent = `${bandwidth.toFixed(2)} Mbps`;
+        
+        // Update result summary based on success rate
+        if (successRate >= 90) {
+            resultIcon.innerHTML = '<i class="fas fa-check-circle text-success fa-4x"></i>';
+            resultTitle.textContent = 'Angriff sehr erfolgreich!';
+            resultTitle.className = 'text-success';
+            resultDescription.textContent = 'Der simulierte DDoS-Angriff war äußerst effektiv. Das Ziel wurde vollständig offline genommen.';
+        } else if (successRate >= 70) {
+            resultIcon.innerHTML = '<i class="fas fa-check-circle text-success fa-4x"></i>';
+            resultTitle.textContent = 'Angriff erfolgreich';
+            resultTitle.className = 'text-success';
+            resultDescription.textContent = 'Der simulierte DDoS-Angriff war erfolgreich. Das Ziel zeigte erhebliche Leistungsprobleme.';
+        } else if (successRate >= 40) {
+            resultIcon.innerHTML = '<i class="fas fa-exclamation-circle text-warning fa-4x"></i>';
+            resultTitle.textContent = 'Angriff teilweise erfolgreich';
+            resultTitle.className = 'text-warning';
+            resultDescription.textContent = 'Der simulierte DDoS-Angriff zeigte einen teilweisen Erfolg. Das Ziel war verlangsamt, aber nicht offline.';
+        } else {
+            resultIcon.innerHTML = '<i class="fas fa-times-circle text-danger fa-4x"></i>';
+            resultTitle.textContent = 'Angriff nicht erfolgreich';
+            resultTitle.className = 'text-danger';
+            resultDescription.textContent = 'Der simulierte DDoS-Angriff war nicht erfolgreich. Das Ziel blieb weiterhin erreichbar.';
+        }
+        
+        // Generate response time graph
+        generateResponseGraph(responseTimeData);
+        
+        // Generate vulnerability analysis
+        generateVulnerabilityAnalysis(successRate);
+    }
+    
+    // Function: Generate response time graph
+    function generateResponseGraph(data) {
+        responseGraphContent.innerHTML = '';
+        
+        // Normalize data for graph display
+        const maxResponse = Math.max(...data.filter(time => time > 0), 1000); // Filter out -1 values (timeouts)
+        const graphHeight = 150; // px
+        
+        // Calculate number of bars to show (max 50)
+        const numBars = Math.min(data.length, 50);
+        const step = Math.max(1, Math.floor(data.length / numBars));
+        
+        // Create graph bars
+        for (let i = 0; i < data.length; i += step) {
+            const value = data[i];
+            
+            // Create bar element
+            const bar = document.createElement('div');
+            bar.className = 'graph-bar';
+            
+            // Set height based on response time
+            let height = 0;
+            let barClass = '';
+            
+            if (value < 0) {
+                // Timeout - show maximum height with error class
+                height = graphHeight;
+                barClass = 'graph-bar-error';
+            } else {
+                // Normal response - height proportional to value
+                height = (value / maxResponse) * graphHeight;
+                
+                if (value < 100) {
+                    barClass = 'graph-bar-good';
+                } else if (value < 500) {
+                    barClass = 'graph-bar-warning';
+                } else {
+                    barClass = 'graph-bar-critical';
+                }
+            }
+            
+            bar.style.height = `${height}px`;
+            bar.classList.add(barClass);
+            
+            // Add tooltip with exact value
+            bar.title = value < 0 ? 'Timeout' : `${Math.round(value)}ms`;
+            
+            responseGraphContent.appendChild(bar);
+        }
+    }
+    
+    // Function: Generate vulnerability analysis
+    function generateVulnerabilityAnalysis(successRate) {
+        vulnTableBody.innerHTML = '';
+        
+        // Create vulnerabilities based on attack results
+        const vulnerabilities = [];
+        
+        if (successRate >= 70) {
+            vulnerabilities.push({
+                name: 'Unzureichender DDoS-Schutz',
+                risk: 'Hoch',
+                recommendation: 'Implementierung einer DDoS-Schutzlösung wie Cloudflare oder AWS Shield'
+            });
+        }
+        
+        if (successRate >= 50) {
+            vulnerabilities.push({
+                name: 'Begrenzte Serverkapazität',
+                risk: 'Mittel',
+                recommendation: 'Erhöhung der Serverressourcen oder Implementierung von Auto-Scaling'
+            });
+        }
+        
+        vulnerabilities.push({
+            name: 'Fehlende Rate-Limiting Mechanismen',
+            risk: successRate >= 60 ? 'Hoch' : 'Mittel',
+            recommendation: 'Implementierung von Rate-Limiting für alle öffentlichen Endpunkte'
+        });
+        
+        vulnerabilities.push({
+            name: 'Sicherheitskonfiguration nicht optimiert',
+            risk: successRate >= 80 ? 'Hoch' : 'Niedrig',
+            recommendation: 'Optimierung der Firewall-Einstellungen und Sicherheitsgruppen'
+        });
+        
+        // Add more vulnerabilities if success rate is low (defense mechanisms detected)
+        if (successRate < 40) {
+            vulnerabilities.push({
+                name: 'Robustes Load-Balancing',
+                risk: 'Niedrig',
+                recommendation: 'Vorhandenes System beibehalten und regelmäßig aktualisieren'
+            });
+            
+            vulnerabilities.push({
+                name: 'Starke Paketfilterung',
+                risk: 'Niedrig',
+                recommendation: 'Vorhandene Konfiguration beibehalten'
+            });
+        }
+        
+        // Generate table rows
+        vulnerabilities.forEach(vuln => {
+            const row = document.createElement('tr');
+            
+            const nameCell = document.createElement('td');
+            nameCell.textContent = vuln.name;
+            row.appendChild(nameCell);
+            
+            const riskCell = document.createElement('td');
+            let riskClass = '';
+            switch (vuln.risk) {
+                case 'Hoch':
+                    riskClass = 'text-danger';
+                    break;
+                case 'Mittel':
+                    riskClass = 'text-warning';
+                    break;
+                case 'Niedrig':
+                    riskClass = 'text-success';
+                    break;
+                default:
+                    riskClass = '';
+            }
+            riskCell.innerHTML = `<span class="${riskClass}">${vuln.risk}</span>`;
+            row.appendChild(riskCell);
+            
+            const recCell = document.createElement('td');
+            recCell.textContent = vuln.recommendation;
+            row.appendChild(recCell);
+            
+            vulnTableBody.appendChild(row);
+        });
+    }
+    
+    // Function: Add a log entry to the attack log
+    function addLogEntry(type, message, messageClass = '') {
+        const now = new Date();
+        const timeString = formatLogTime(now);
+        
+        let typeDisplay;
+        let typeClass;
+        
+        switch (type) {
+            case 'System':
+                typeDisplay = '[System]';
+                typeClass = 'text-muted';
+                break;
+            case 'Attack':
+                typeDisplay = '[Attack]';
+                typeClass = 'text-danger';
+                break;
+            case 'Botnet':
+                typeDisplay = '[Botnet]';
+                typeClass = 'text-primary';
+                break;
+            case 'Status':
+                typeDisplay = '[Status]';
+                typeClass = 'text-warning';
+                break;
+            case 'Info':
+                typeDisplay = '[Info]';
+                typeClass = 'text-info';
+                break;
+            default:
+                typeDisplay = '[Log]';
+                typeClass = '';
+        }
+        
+        const entry = document.createElement('div');
+        entry.className = 'log-entry';
+        entry.innerHTML = `<span class="log-time-entry">${timeString}</span> <span class="${typeClass}">${typeDisplay}</span> <span class="${messageClass}">${message}</span>`;
+        attackLogContainer.appendChild(entry);
+        
+        // Auto-scroll to bottom
+        attackLogContainer.scrollTop = attackLogContainer.scrollHeight;
+    }
+    
+    // Helper function: Format time as MM:SS
+    function formatTime(seconds) {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+    
+    // Helper function: Format time as HH:MM:SS
+    function formatLogTime(date) {
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+        const seconds = date.getSeconds().toString().padStart(2, '0');
+        return `${hours}:${minutes}:${seconds}`;
+    }
+});
+</script>
+<style>
+.terminal-input {
+    background-color: #121212;
+    border: 1px solid #333;
+    color: #e0e0e0;
+    font-family: var(--mono-font);
+}
+
+.detail-label {
+    font-weight: bold;
+    color: #6c757d;
+    width: 130px;
+}
+
+/* Attack console styles */
+.attack-status {
+    font-family: var(--mono-font);
+    font-size: 0.9rem;
+}
+
+.attack-metrics {
+    margin-bottom: 1rem;
+}
+
+.metrics-row {
+    margin-bottom: 0.5rem;
+}
+
+.metric-card {
+    background-color: #181818;
+    border: 1px solid #333;
+    padding: 0.75rem;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.metric-title {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-bottom: 0.25rem;
+}
+
+.metric-value {
+    font-family: var(--mono-font);
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #05d9e8;
+}
+
+.metric-unit {
+    font-size: 0.75rem;
+    color: #6c757d;
+}
+
+.log-header {
+    background-color: #181818;
+    border: 1px solid #333;
+    padding: 0.5rem;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    font-family: var(--mono-font);
+    font-size: 0.9rem;
+}
+
+.attack-log {
+    background-color: #0c0c0c;
+    border: 1px solid #333;
+    border-top: none;
+    padding: 0.5rem;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+    font-family: var(--mono-font);
+    font-size: 0.85rem;
+    height: 200px;
+    overflow-y: auto;
+}
+
+.log-entry {
+    margin-bottom: 0.25rem;
+    line-height: 1.2;
+}
+
+.log-time-entry {
+    color: #6c757d;
+    margin-right: 0.5rem;
+}
+
+/* Result styles */
+.result-icon {
+    margin-bottom: 1rem;
+}
+
+.result-stats {
+    background-color: #181818;
+    border: 1px solid #333;
+    padding: 1rem;
+    border-radius: 4px;
+    margin-top: 1rem;
+}
+
+.stat-item {
+    margin-bottom: 0.75rem;
+}
+
+.stat-label {
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+.stat-value {
+    font-family: var(--mono-font);
+    font-size: 1.1rem;
+    color: #e0e0e0;
+}
+
+/* Graph styles */
+.response-graph-container {
+    margin-top: 1rem;
+}
+
+.response-graph {
+    display: flex;
+    height: 150px;
+    margin-bottom: 0.5rem;
+}
+
+.graph-y-axis {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding-right: 0.5rem;
+    font-size: 0.7rem;
+    color: #6c757d;
+    text-align: right;
+    width: 50px;
+}
+
+.graph-content {
+    flex-grow: 1;
+    display: flex;
+    align-items: flex-end;
+    border-bottom: 1px solid #333;
+    border-left: 1px solid #333;
+    padding-left: 1px;
+    height: 150px;
+}
+
+.graph-x-axis {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.7rem;
+    color: #6c757d;
+    padding-left: 50px;
+}
+
+.graph-bar {
+    flex-grow: 1;
+    margin: 0 1px;
+    background-color: #05d9e8;
+    transition: height 0.3s ease;
+}
+
+.graph-bar-good {
+    background-color: #28a745;
+}
+
+.graph-bar-warning {
+    background-color: #ffc107;
+}
+
+.graph-bar-critical {
+    background-color: #dc3545;
+}
+
+.graph-bar-error {
+    background-color: #6c757d;
+    background-image: repeating-linear-gradient(
+        -45deg,
+        #6c757d,
+        #6c757d 5px,
+        #dc3545 5px,
+        #dc3545 10px
+    );
+}
+
+/* Vulnerability table */
+.vuln-table {
+    font-size: 0.85rem;
+    background-color: #181818;
+}
+
+.vuln-table thead {
+    background-color: #212529;
+}
+</style>
+{% endblock %}

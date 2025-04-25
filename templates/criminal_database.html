@@ -1,0 +1,535 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-dark hacker-card">
+            <div class="card-header bg-dark text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h2 class="mb-0">
+                        <i class="fas fa-database me-2"></i>INTERPOL Kriminal-Datenbank
+                    </h2>
+                    <div class="d-flex align-items-center">
+                        <div class="status-indicator status-danger blink-slow me-2"></div>
+                        <span class="badge bg-danger terminal-badge">TOP SECRET</span>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-danger">
+                    <div class="d-flex">
+                        <i class="fas fa-exclamation-triangle fs-4 me-3"></i>
+                        <div>
+                            <h5 class="alert-heading">RESTRICTED ACCESS</h5>
+                            <p class="mb-0">Die Nutzung dieser Datenbank ist nur für autorisiertes Personal bestimmt. Sämtliche Aktivitäten werden aufgezeichnet und können strafrechtlich verfolgt werden.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-4">
+                    <div class="col-md-8">
+                        <div class="input-group">
+                            <input type="text" class="form-control terminal-input" id="searchInput" placeholder="Suche nach Name, Alias, Nationalität, Verbrechen...">
+                            <button class="btn btn-outline-danger" type="button" id="searchButton">
+                                <i class="fas fa-search me-1"></i>Suchen
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <select class="form-select terminal-input" id="filterSelect">
+                            <option value="all">Alle Verdächtigen</option>
+                            <option value="threat_high">Höchste Bedrohungsstufe</option>
+                            <option value="active">Aktiv Gesucht</option>
+                            <option value="red_notice">Red Notice</option>
+                            <option value="cyber">Cyberkriminalität</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-12">
+                        <div class="database-header d-flex justify-content-between align-items-center">
+                            <div class="d-flex">
+                                <div class="database-status">
+                                    <i class="fas fa-circle text-success me-1"></i> LIVE
+                                </div>
+                                <div class="database-info ms-3">
+                                    Verbunden mit: <span class="text-info">INTERPOL-DB-EUR-05</span>
+                                </div>
+                            </div>
+                            <div class="database-access-level">
+                                Access Level: <span class="text-danger">Alpha-7</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="suspect-cards mt-4" id="suspectCardsContainer">
+                    {% for suspect in suspects %}
+                    <div class="suspect-card mb-4" data-threat="{{ suspect.threat_level }}" data-status="{{ suspect.status }}" data-id="{{ suspect.id }}">
+                        <div class="card border-dark h-100">
+                            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                                <span class="suspect-name fw-bold">{{ suspect.first_name }} {{ suspect.last_name }}</span>
+                                <div>
+                                    {% if suspect.threat_level >= 4 %}
+                                    <span class="badge bg-danger me-1">Bedrohungsstufe {{ suspect.threat_level }}</span>
+                                    {% elif suspect.threat_level == 3 %}
+                                    <span class="badge bg-warning me-1">Bedrohungsstufe {{ suspect.threat_level }}</span>
+                                    {% else %}
+                                    <span class="badge bg-info me-1">Bedrohungsstufe {{ suspect.threat_level }}</span>
+                                    {% endif %}
+                                    
+                                    <span class="badge {% if suspect.status == 'Active' %}bg-success{% else %}bg-secondary{% endif %}">{{ suspect.status }}</span>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-4 suspect-photo-container">
+                                        <div class="suspect-photo">
+                                            <img src="{{ url_for('static', filename='img/' + suspect.photo_url) }}" alt="{{ suspect.first_name }} {{ suspect.last_name }}" class="img-fluid">
+                                            <div class="id-overlay">
+                                                <div class="id-number">ID-{{ '%06d'|format(suspect.id) }}</div>
+                                                <div class="id-organization">INTERPOL</div>
+                                            </div>
+                                        </div>
+                                        <div class="wanted-info text-center mt-2">
+                                            {% for notice in suspect.wanted_notices %}
+                                            {% if notice.is_active %}
+                                            <div class="wanted-badge {{ notice.notice_type.lower() }}-notice">
+                                                {{ notice.notice_type }} NOTICE
+                                            </div>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <div class="suspect-details">
+                                            <div class="mb-2">
+                                                <span class="detail-label">Alias:</span>
+                                                <span class="detail-value">{{ suspect.alias or 'Unbekannt' }}</span>
+                                            </div>
+                                            <div class="mb-2">
+                                                <span class="detail-label">Nationalität:</span>
+                                                <span class="detail-value">{{ suspect.nationality or 'Unbekannt' }}</span>
+                                            </div>
+                                            <div class="mb-2">
+                                                <span class="detail-label">Geburtsdatum:</span>
+                                                <span class="detail-value">{{ suspect.date_of_birth.strftime('%d.%m.%Y') if suspect.date_of_birth else 'Unbekannt' }}</span>
+                                            </div>
+                                            <div class="mb-2">
+                                                <span class="detail-label">Geschlecht:</span>
+                                                <span class="detail-value">{{ suspect.gender or 'Unbekannt' }}</span>
+                                            </div>
+                                            <div class="mb-2">
+                                                <span class="detail-label">Körpergröße:</span>
+                                                <span class="detail-value">{{ suspect.height|int }}cm</span>
+                                            </div>
+                                            <div class="mb-2">
+                                                <span class="detail-label">Gewicht:</span>
+                                                <span class="detail-value">{{ suspect.weight|int }}kg</span>
+                                            </div>
+                                            <div class="mb-2">
+                                                <span class="detail-label">Augenfarbe:</span>
+                                                <span class="detail-value">{{ suspect.eye_color or 'Unbekannt' }}</span>
+                                            </div>
+                                            <div class="mb-2">
+                                                <span class="detail-label">Haarfarbe:</span>
+                                                <span class="detail-value">{{ suspect.hair_color or 'Unbekannt' }}</span>
+                                            </div>
+                                            <div class="mb-2">
+                                                <span class="detail-label">Zuletzt gesehen:</span>
+                                                <span class="detail-value">{{ suspect.last_known_location or 'Unbekannt' }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <hr class="divider">
+                                
+                                <div class="criminal-history mt-3">
+                                    <h5 class="mb-3">
+                                        <i class="fas fa-exclamation-circle text-danger me-2"></i>Krimineller Hintergrund
+                                    </h5>
+                                    
+                                    <div class="table-responsive">
+                                        <table class="table table-dark table-hover table-sm criminal-record-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Verbrechen</th>
+                                                    <th>Datum</th>
+                                                    <th>Ort</th>
+                                                    <th>Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for record in suspect.criminal_records %}
+                                                <tr>
+                                                    <td>{{ record.crime }}</td>
+                                                    <td>{{ record.date_committed.strftime('%d.%m.%Y') if record.date_committed else 'Unbekannt' }}</td>
+                                                    <td>{{ record.location or 'Unbekannt' }}</td>
+                                                    <td>
+                                                        <span class="badge {% if record.status == 'Convicted' %}bg-danger{% elif record.status == 'Alleged' %}bg-warning{% else %}bg-info{% endif %}">
+                                                            {{ record.status }}
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                
+                                <div class="wanted-details mt-3">
+                                    {% for notice in suspect.wanted_notices %}
+                                    {% if notice.is_active %}
+                                    <div class="wanted-notice">
+                                        <div class="notice-header mb-2">
+                                            <span class="notice-type {{ notice.notice_type.lower() }}-type">{{ notice.notice_type }} NOTICE</span>
+                                            <span class="notice-date">Ausgestellt: {{ notice.date_issued.strftime('%d.%m.%Y') if notice.date_issued else 'Unbekannt' }}</span>
+                                        </div>
+                                        <div class="notice-details">
+                                            <div class="mb-2">
+                                                <span class="detail-label">Austellendes Land:</span>
+                                                <span class="detail-value">{{ notice.issuing_country }}</span>
+                                            </div>
+                                            <div class="mb-2">
+                                                <span class="detail-label">Anklagepunkt:</span>
+                                                <span class="detail-value">{{ notice.charge }}</span>
+                                            </div>
+                                            <div class="mb-2">
+                                                <span class="detail-label">Details:</span>
+                                                <p class="detail-value">{{ notice.details }}</p>
+                                            </div>
+                                            {% if notice.reward_amount %}
+                                            <div class="mb-2">
+                                                <span class="detail-label">Belohnung:</span>
+                                                <span class="detail-value reward-amount">${{ '{:,.0f}'.format(notice.reward_amount) }}</span>
+                                            </div>
+                                            {% endif %}
+                                            <div class="mb-2">
+                                                <span class="detail-label">Kontakt:</span>
+                                                <span class="detail-value">{{ notice.contact_info }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="card-footer bg-dark text-white">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <small class="text-muted">Letzte Aktualisierung: {{ suspect.updated_at.strftime('%d.%m.%Y %H:%M') }}</small>
+                                    </div>
+                                    <div>
+                                        <button class="btn btn-sm btn-outline-danger me-2 track-btn" data-suspect-id="{{ suspect.id }}">
+                                            <i class="fas fa-map-marker-alt me-1"></i>Verfolgen
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-info report-btn" data-suspect-id="{{ suspect.id }}">
+                                            <i class="fas fa-file-alt me-1"></i>Bericht
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- No results message -->
+                <div id="noResultsMessage" class="text-center p-5" style="display: none;">
+                    <i class="fas fa-search fa-3x mb-3 text-muted"></i>
+                    <h4 class="text-muted">Keine Ergebnisse gefunden</h4>
+                    <p>Versuchen Sie andere Suchbegriffe oder Filter.</p>
+                </div>
+                
+                <!-- Database authentication verification -->
+                <div class="database-footer mt-4">
+                    <div class="d-flex justify-content-between">
+                        <div class="database-verification">
+                            <span class="verification-label">Datenbankintegrität:</span>
+                            <span class="verification-value verified">
+                                <i class="fas fa-check-circle me-1"></i>Verifiziert
+                            </span>
+                        </div>
+                        <div class="database-timestamp">
+                            <span class="timestamp-label">Letzte Synchronisierung:</span>
+                            <span class="timestamp-value">{{ now.strftime('%d.%m.%Y %H:%M:%S') }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchInput');
+    const searchButton = document.getElementById('searchButton');
+    const filterSelect = document.getElementById('filterSelect');
+    const suspectCards = document.querySelectorAll('.suspect-card');
+    const noResultsMessage = document.getElementById('noResultsMessage');
+    
+    // Search functionality
+    function performSearch() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const filterValue = filterSelect.value;
+        let resultCount = 0;
+        
+        suspectCards.forEach(card => {
+            const cardContent = card.textContent.toLowerCase();
+            const threatLevel = parseInt(card.dataset.threat);
+            const status = card.dataset.status;
+            
+            // Check if card matches search term
+            const matchesSearch = searchTerm === '' || cardContent.includes(searchTerm);
+            
+            // Check if card matches filter
+            let matchesFilter = true;
+            if (filterValue === 'threat_high') {
+                matchesFilter = threatLevel >= 4;
+            } else if (filterValue === 'active') {
+                matchesFilter = status === 'Active';
+            } else if (filterValue === 'red_notice') {
+                matchesFilter = card.querySelector('.red-notice') !== null;
+            } else if (filterValue === 'cyber') {
+                matchesFilter = cardContent.includes('cyber') || 
+                                cardContent.includes('hack') || 
+                                cardContent.includes('malware') ||
+                                cardContent.includes('ransomware');
+            }
+            
+            // Show/hide card based on search and filter
+            if (matchesSearch && matchesFilter) {
+                card.style.display = '';
+                resultCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+        
+        // Show/hide no results message
+        if (resultCount === 0) {
+            noResultsMessage.style.display = 'block';
+        } else {
+            noResultsMessage.style.display = 'none';
+        }
+    }
+    
+    // Event listeners
+    searchButton.addEventListener('click', performSearch);
+    searchInput.addEventListener('keyup', function(e) {
+        if (e.key === 'Enter') {
+            performSearch();
+        }
+    });
+    filterSelect.addEventListener('change', performSearch);
+    
+    // Button event listeners
+    document.querySelectorAll('.track-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const suspectId = this.dataset.suspectId;
+            alert(`Verfolgung von Verdächtigem ID-${suspectId} initiiert. Die Standortdaten werden in Echtzeit aktualisiert.`);
+        });
+    });
+    
+    document.querySelectorAll('.report-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const suspectId = this.dataset.suspectId;
+            alert(`Bericht für Verdächtigen ID-${suspectId} wird generiert. Bitte warten Sie auf die Verarbeitung.`);
+        });
+    });
+    
+    // Add hover effects for suspect cards
+    suspectCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.querySelector('.card').classList.add('card-highlight');
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.querySelector('.card').classList.remove('card-highlight');
+        });
+    });
+});
+</script>
+<style>
+.terminal-input {
+    background-color: #121212;
+    border: 1px solid #333;
+    color: #e0e0e0;
+}
+
+.database-header {
+    background-color: #0c0c0c;
+    border: 1px solid #333;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-family: var(--mono-font);
+    font-size: 0.85rem;
+}
+
+.database-footer {
+    background-color: #0c0c0c;
+    border: 1px solid #333;
+    padding: 0.75rem 1rem;
+    border-radius: 4px;
+    font-family: var(--mono-font);
+    font-size: 0.85rem;
+}
+
+.database-verification .verified {
+    color: #28a745;
+}
+
+.suspect-photo-container {
+    position: relative;
+}
+
+.suspect-photo {
+    position: relative;
+    border: 2px solid #333;
+    overflow: hidden;
+    height: 200px;
+    background-color: #181818;
+}
+
+.suspect-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.id-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 0.25rem;
+    font-family: var(--mono-font);
+    text-align: center;
+    font-size: 0.8rem;
+}
+
+.id-number {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+.id-organization {
+    color: #6c757d;
+    font-size: 0.7rem;
+}
+
+.wanted-info {
+    margin-top: 0.5rem;
+}
+
+.wanted-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: bold;
+    border-radius: 3px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.red-notice {
+    background-color: #dc3545;
+    color: white;
+}
+
+.yellow-notice {
+    background-color: #ffc107;
+    color: black;
+}
+
+.blue-notice {
+    background-color: #0d6efd;
+    color: white;
+}
+
+.detail-label {
+    font-weight: bold;
+    color: #6c757d;
+    width: 120px;
+    display: inline-block;
+}
+
+.detail-value {
+    color: #e0e0e0;
+}
+
+.reward-amount {
+    color: #ffc107;
+    font-weight: bold;
+}
+
+.criminal-record-table {
+    font-size: 0.85rem;
+    background-color: #181818;
+    border: 1px solid #333;
+}
+
+.criminal-record-table thead {
+    background-color: #212529;
+}
+
+.wanted-notice {
+    background-color: #181818;
+    border: 1px solid #333;
+    padding: 1rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+}
+
+.notice-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.notice-type {
+    font-weight: bold;
+    font-size: 0.9rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 3px;
+}
+
+.red-type {
+    background-color: #dc3545;
+    color: white;
+}
+
+.yellow-type {
+    background-color: #ffc107;
+    color: black;
+}
+
+.blue-type {
+    background-color: #0d6efd;
+    color: white;
+}
+
+.notice-date {
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+.divider {
+    border-top: 1px solid #333;
+    margin: 1.5rem 0;
+}
+
+.card-highlight {
+    box-shadow: 0 0 15px rgba(220, 53, 69, 0.5);
+    transform: translateY(-5px);
+    transition: all 0.3s ease;
+}
+</style>
+{% endblock %}

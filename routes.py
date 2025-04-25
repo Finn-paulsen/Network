@@ -10,13 +10,16 @@ from datetime import datetime
 from flask import render_template, redirect, url_for, flash, request, jsonify
 from flask_login import login_user, logout_user, login_required, current_user
 
-from app import app
-from models import User
+from app import app, setup_database
+from models import User, Suspect, CriminalRecord, WantedNotice, DDOSTarget, DDOSAttackLog
 from forms import LoginForm, RegisterForm, NetworkScanForm, TerminalCommandForm, FirewallRuleForm, BruteForceForm, ExploitScannerForm, MalwareSimulatorForm
 from network_utils import scan_network, get_host_details
 from firewall_utils import add_firewall_rule, get_firewall_rules, delete_firewall_rule
 import subprocess
 import logging
+
+# Initialize database
+setup_database()
 
 @app.route('/')
 def index():
@@ -311,6 +314,30 @@ def mission_control():
     This is a game-like interface for educational purposes.
     """
     return render_template('mission_control.html')
+
+@app.route('/criminal-database')
+@login_required
+def criminal_database():
+    """
+    Criminal database with information about cyber criminals.
+    This is a simulation for educational purposes.
+    """
+    # Get all suspects with their related records and notices
+    suspects = Suspect.query.all()
+    now = datetime.now()
+    
+    return render_template('criminal_database.html', suspects=suspects, now=now)
+
+@app.route('/ddos-attack')
+@login_required
+def ddos_attack():
+    """
+    DDoS attack simulator for educational purposes.
+    """
+    # Get all targets for the attack simulator
+    targets = DDOSTarget.query.all()
+    
+    return render_template('ddos_attack.html', targets=targets)
 
 # Simulation functions for educational purposes only
 
