@@ -312,42 +312,127 @@ def simulate_brute_force(target_type, target_value, charset, min_length, max_len
     """
     # For safety and educational purposes, we'll simulate the process
     # and always return after a reasonable number of attempts
-    max_attempts = 1000
+    max_attempts = 2000
     attempts = 0
     
     # For simulation, if target is a PIN, we'll "find" it as long as it's numeric
     # Otherwise, we'll randomly decide if we find it or not
     if target_type == 'pin' and target_value.isdigit() and len(target_value) <= 6:
         # Simulate a successful PIN cracking
-        time.sleep(random.uniform(0.5, 2.0))  # Simulate processing time
-        return (True, target_value, random.randint(50, max_attempts))
+        max_numeric_attempts = 10 ** len(target_value)
+        cracking_percentage = random.uniform(30, 90) / 100  # Will find between 30-90% of the way through
+        attempts = int(max_numeric_attempts * cracking_percentage)
+        attempts = min(attempts, max_attempts)  # Cap for reasonable simulation time
+        
+        # Actual target value may be too easy, so we'll generate a reasonable PIN to make the simulation more interesting
+        if len(target_value) < 4:
+            attempts = random.randint(50, 300)
+            
+        # Simulate processing time
+        simulation_time = 2.0 + (len(target_value) * 0.5)
+        time.sleep(simulation_time)
+        
+        return (True, target_value, attempts)
     
     # For passwords, simulate success if length is reasonable
     elif target_type == 'password' and len(target_value) <= max_length:
-        success_chance = 0.7 if len(target_value) <= 3 else 0.3
+        # Calculate character set size and possible combinations
+        charset_size = len(charset)
+        
+        # Calculate max combinations (sum of all possible lengths)
+        max_combinations = sum([charset_size ** length for length in range(min_length, min(max_length, len(target_value)) + 1)])
+        
+        # Success chance based on password complexity
+        if len(target_value) <= 3:
+            success_chance = 0.9
+            attempts = random.randint(100, min(1000, max_combinations // 2))
+            simulation_time = 1.0
+        elif len(target_value) == 4:
+            success_chance = 0.7
+            attempts = random.randint(1000, min(5000, max_combinations // 3))
+            simulation_time = 1.5
+        elif len(target_value) == 5:
+            success_chance = 0.4
+            attempts = random.randint(5000, min(20000, max_combinations // 4))
+            simulation_time = 2.0
+        else:
+            success_chance = 0.2
+            attempts = random.randint(20000, min(50000, max_combinations // 5))
+            simulation_time = 3.0
+            
+        # Cap attempts for reasonable simulation
+        attempts = min(attempts, max_attempts)
+        
+        # Check password complexity to adjust success chance
+        has_upper = any(c.isupper() for c in target_value)
+        has_lower = any(c.islower() for c in target_value)
+        has_digit = any(c.isdigit() for c in target_value)
+        has_special = any(c in string.punctuation for c in target_value)
+        
+        complexity_score = sum([has_upper, has_lower, has_digit, has_special])
+        success_chance -= (complexity_score * 0.15)  # Reduce chance based on complexity
+        
+        # Minimum chance is 5%
+        success_chance = max(0.05, success_chance)
+        
         found = random.random() < success_chance
         
         # Make the simulation time proportional to the complexity
-        simulation_time = 0.5 * (2 ** (min(len(target_value), 5) - 1))
         time.sleep(simulation_time)
         
         if found:
-            return (True, target_value, random.randint(100, max_attempts))
+            return (True, target_value, attempts)
     
     # For hash cracking, simulate by checking if it looks like a hash
     elif target_type == 'hash' and len(target_value) >= 32:
+        # Recognize common hash types
+        is_md5 = len(target_value) == 32 and all(c in string.hexdigits for c in target_value)
+        is_sha1 = len(target_value) == 40 and all(c in string.hexdigits for c in target_value)
+        is_sha256 = len(target_value) == 64 and all(c in string.hexdigits for c in target_value)
+        
+        # Set difficulties based on hash type
+        if is_md5:
+            success_chance = 0.3
+            simulation_time = 2.5
+            attempts = random.randint(5000, 15000)
+        elif is_sha1:
+            success_chance = 0.15
+            simulation_time = 3.5
+            attempts = random.randint(15000, 30000)
+        elif is_sha256:
+            success_chance = 0.05
+            simulation_time = 4.5
+            attempts = random.randint(30000, 50000)
+        else:
+            # Unknown hash format
+            success_chance = 0.1
+            simulation_time = 3.0
+            attempts = random.randint(10000, 25000)
+            
+        # Cap attempts for reasonable simulation
+        attempts = min(attempts, max_attempts)
+        
         # For education: simulate a harder time cracking hashes
-        time.sleep(random.uniform(1.5, 3.0))
+        time.sleep(simulation_time)
         
         # Simulate a low success chance for hashes
-        found = random.random() < 0.2
+        found = random.random() < success_chance
         if found:
             # Generate a plausible password that could've created the hash
-            fake_password = ''.join(random.choices(charset, k=random.randint(4, 6)))
-            return (True, fake_password, random.randint(500, max_attempts))
+            fake_password = ''.join(random.choices(charset, k=random.randint(4, 8)))
+            
+            # Sometimes add complexity to the password
+            if random.random() > 0.5:
+                fake_password = fake_password.capitalize()
+            if random.random() > 0.7:
+                fake_password += random.choice(string.digits)
+            if random.random() > 0.8:
+                fake_password += random.choice(string.punctuation)
+                
+            return (True, fake_password, attempts)
     
     # Default: unsuccessful brute force
-    return (False, None, random.randint(max_attempts // 2, max_attempts))
+    return (False, None, random.randint(max_attempts // 3, max_attempts))
 
 def simulate_vulnerability_scan(target_url, scan_type, intensity):
     """

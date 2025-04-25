@@ -7,315 +7,548 @@
             <div class="card-header bg-dark text-white">
                 <div class="d-flex justify-content-between align-items-center">
                     <h2 class="mb-0">
-                        <i class="fas fa-key me-2"></i>Passwort-Brute-Force (Simulation)
+                        <i class="fas fa-key me-2"></i>Brute Force Testing Lab
                     </h2>
-                    <span class="badge bg-danger">Nur für Bildungszwecke</span>
+                    <div class="d-flex align-items-center">
+                        <div class="status-indicator status-secure me-2"></div>
+                        <span class="badge bg-danger terminal-badge">Restricted</span>
+                    </div>
                 </div>
             </div>
             <div class="card-body">
-                <div class="alert alert-warning">
-                    <div class="d-flex">
-                        <div>
-                            <i class="fas fa-exclamation-triangle fa-2x me-3 text-warning"></i>
-                        </div>
-                        <div>
-                            <strong>Bildungszweck:</strong> Dieses Tool dient nur zur Demonstration, wie Brute-Force-Angriffe funktionieren können. 
-                            Alle Ergebnisse werden simuliert und es werden keine tatsächlichen Angriffe durchgeführt. Das Verständnis solcher Techniken ist wichtig, 
-                            um sich besser vor ihnen schützen zu können.
-                        </div>
-                    </div>
+                <div class="alert alert-warning terminal-tip">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Sicherheitshinweis:</strong> Dieses Tool dient ausschließlich zu Bildungszwecken. Die Anwendung von Brute-Force-Techniken ohne Genehmigung ist illegal und kann zu strafrechtlichen Konsequenzen führen.
                 </div>
                 
-                <div class="row mt-4">
-                    <div class="col-lg-5">
-                        <div class="card border-dark">
-                            <div class="card-header bg-dark text-white">
-                                <h4 class="mb-0"><i class="fas fa-sliders-h me-2"></i>Parameter</h4>
-                            </div>
-                            <div class="card-body">
-                                <form method="POST" action="{{ url_for('brute_force') }}">
-                                    {{ form.hidden_tag() }}
-                                    
+                <form method="POST" action="{{ url_for('brute_force') }}" id="bruteForceForm">
+                    {{ form.hidden_tag() }}
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="card border-dark h-100">
+                                <div class="card-header bg-dark text-white">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-cog me-2"></i>Parameter
+                                    </h5>
+                                </div>
+                                <div class="card-body">
                                     <div class="mb-3">
                                         <label for="target_type" class="form-label">{{ form.target_type.label }}</label>
-                                        {{ form.target_type(class="form-select") }}
+                                        {{ form.target_type(class="form-select terminal-input") }}
+                                        {% if form.target_type.errors %}
+                                            <div class="text-danger">
+                                                {% for error in form.target_type.errors %}
+                                                    <small>{{ error }}</small>
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
                                     </div>
                                     
                                     <div class="mb-3">
                                         <label for="target_value" class="form-label">{{ form.target_value.label }}</label>
-                                        {{ form.target_value(class="form-control", placeholder="Passwort oder Hash zum Testen") }}
-                                        <small class="form-text text-muted">Für Simulationszwecke, empfehlen wir einen einfachen Wert.</small>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-dark text-light"><i class="fas fa-lock"></i></span>
+                                            {{ form.target_value(class="form-control terminal-input", placeholder="Passwort, Hash oder PIN-Code") }}
+                                        </div>
+                                        {% if form.target_value.errors %}
+                                            <div class="text-danger">
+                                                {% for error in form.target_value.errors %}
+                                                    <small>{{ error }}</small>
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
                                     </div>
                                     
                                     <div class="mb-3">
                                         <label for="character_set" class="form-label">{{ form.character_set.label }}</label>
-                                        {{ form.character_set(class="form-select") }}
+                                        {{ form.character_set(class="form-select terminal-input") }}
+                                        {% if form.character_set.errors %}
+                                            <div class="text-danger">
+                                                {% for error in form.character_set.errors %}
+                                                    <small>{{ error }}</small>
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
                                     </div>
                                     
                                     <div class="row">
-                                        <div class="col-md-6">
+                                        <div class="col-6">
                                             <div class="mb-3">
                                                 <label for="min_length" class="form-label">{{ form.min_length.label }}</label>
-                                                {{ form.min_length(class="form-control") }}
+                                                {{ form.min_length(class="form-control terminal-input") }}
+                                                {% if form.min_length.errors %}
+                                                    <div class="text-danger">
+                                                        {% for error in form.min_length.errors %}
+                                                            <small>{{ error }}</small>
+                                                        {% endfor %}
+                                                    </div>
+                                                {% endif %}
                                             </div>
                                         </div>
-                                        <div class="col-md-6">
+                                        <div class="col-6">
                                             <div class="mb-3">
                                                 <label for="max_length" class="form-label">{{ form.max_length.label }}</label>
-                                                {{ form.max_length(class="form-control") }}
-                                                <small class="form-text text-muted">Max: 6 (Simulation)</small>
+                                                {{ form.max_length(class="form-control terminal-input") }}
+                                                {% if form.max_length.errors %}
+                                                    <div class="text-danger">
+                                                        {% for error in form.max_length.errors %}
+                                                            <small>{{ error }}</small>
+                                                        {% endfor %}
+                                                    </div>
+                                                {% endif %}
                                             </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="card border-dark h-100">
+                                <div class="card-header bg-dark text-white">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-chart-line me-2"></i>Komplexitätsanalyse
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <div class="d-flex justify-content-between">
+                                            <label class="form-label mb-1">Zeichensatz-Größe:</label>
+                                            <span class="text-primary" id="charsetSize">?</span>
+                                        </div>
+                                        <div class="progress mb-3" style="height: 8px;">
+                                            <div id="charsetSizeIndicator" class="progress-bar bg-primary" style="width: 0%"></div>
                                         </div>
                                     </div>
                                     
-                                    <div class="d-grid gap-2">
-                                        {{ form.submit(class="btn btn-primary") }}
+                                    <div class="mb-3">
+                                        <div class="d-flex justify-content-between">
+                                            <label class="form-label mb-1">Mögliche Kombinationen:</label>
+                                            <span class="text-warning" id="combinations">?</span>
+                                        </div>
+                                        <div class="progress mb-3" style="height: 8px;">
+                                            <div id="combinationsIndicator" class="progress-bar bg-warning" style="width: 0%"></div>
+                                        </div>
                                     </div>
-                                </form>
+                                    
+                                    <div class="mb-3">
+                                        <div class="d-flex justify-content-between">
+                                            <label class="form-label mb-1">Geschätzte Cracking-Zeit:</label>
+                                            <span class="text-danger" id="crackTime">?</span>
+                                        </div>
+                                        <div class="progress mb-3" style="height: 8px;">
+                                            <div id="crackTimeIndicator" class="progress-bar bg-danger" style="width: 0%"></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="alert alert-dark mb-3">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-shield-alt me-3 fs-2 text-primary"></i>
+                                            <div>
+                                                <h6 class="mb-1">Passwort-Stärke</h6>
+                                                <div class="progress" style="height: 8px;">
+                                                    <div id="strengthIndicator" class="progress-bar" style="width: 0%"></div>
+                                                </div>
+                                                <p class="small mt-1 mb-0" id="strengthText">Geben Sie einen Wert ein, um eine Analyse zu erhalten.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="col-lg-7">
-                        {% if result %}
-                        <div class="card border-dark h-100">
+                    <div class="mt-3 text-center">
+                        {{ form.submit(class="btn btn-lg btn-outline-danger", id="startButton") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Simulation Results -->
+{% if result %}
+<div class="row">
+    <div class="col-12">
+        <div class="card border-dark hacker-card">
+            <div class="card-header bg-dark text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h3 class="mb-0">
+                        <i class="fas fa-chart-bar me-2"></i>Brute-Force-Ergebnisse
+                    </h3>
+                    <div class="simulation-stats">
+                        <span class="badge bg-primary terminal-badge">Typ: {{ result.target_type }}</span>
+                        <span class="badge bg-info terminal-badge">Zeit: {{ "%.2f"|format(result.elapsed_time) }}s</span>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div id="simulationLog" class="terminal-output mb-4">
+                    <div><span class="text-muted">[System]</span> Brute Force Simulation gestartet auf {{ result.target_type }}...</div>
+                    <div><span class="text-muted">[System]</span> Zeichensatz: {{ result.character_set }}</div>
+                    <div><span class="text-muted">[System]</span> Suchraum: Länge von {{ form.min_length.data }} bis {{ form.max_length.data }} Zeichen</div>
+                    <div><span class="text-muted">[System]</span> Beginne mit dem Durchgehen aller möglichen Kombinationen...</div>
+                    <div><span class="text-primary">[Fortschritt]</span> <span class="text-warning">10%</span> der möglichen Kombinationen überprüft...</div>
+                    <div><span class="text-primary">[Fortschritt]</span> <span class="text-warning">25%</span> der möglichen Kombinationen überprüft...</div>
+                    <div><span class="text-primary">[Fortschritt]</span> <span class="text-warning">50%</span> der möglichen Kombinationen überprüft...</div>
+                    <div><span class="text-primary">[Fortschritt]</span> <span class="text-warning">75%</span> der möglichen Kombinationen überprüft...</div>
+                    <div><span class="text-primary">[Fortschritt]</span> <span class="text-warning">90%</span> der möglichen Kombinationen überprüft...</div>
+                    {% if result.found %}
+                    <div><span class="text-success">[Erfolg]</span> Ziel geknackt nach {{ "{:,}".format(result.attempts) }} Versuchen!</div>
+                    {% else %}
+                    <div><span class="text-danger">[Fehlgeschlagen]</span> Ziel konnte nicht geknackt werden nach {{ "{:,}".format(result.attempts) }} Versuchen.</div>
+                    {% endif %}
+                    <div><span class="text-muted">[System]</span> Simulation abgeschlossen in {{ "%.2f"|format(result.elapsed_time) }} Sekunden.</div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card border-dark">
                             <div class="card-header bg-dark text-white">
-                                <h4 class="mb-0"><i class="fas fa-clipboard-list me-2"></i>Simulationsergebnisse</h4>
+                                <h5 class="mb-0">
+                                    <i class="fas fa-list-alt me-2"></i>Details
+                                </h5>
                             </div>
                             <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center mb-4">
-                                    <h5>
-                                        {% if result.found %}
-                                        <span class="badge bg-success"><i class="fas fa-check me-1"></i>Erfolgreich</span>
-                                        {% else %}
-                                        <span class="badge bg-danger"><i class="fas fa-times me-1"></i>Nicht erfolgreich</span>
-                                        {% endif %}
-                                    </h5>
-                                    <span class="text-muted">{{ result.timestamp if result.timestamp else 'Jetzt' }}</span>
+                                <table class="table table-hover">
+                                    <tr>
+                                        <th>Zieltyp:</th>
+                                        <td>{{ result.target_type }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Zielwert:</th>
+                                        <td>
+                                            {% if result.target_type == 'hash' %}
+                                            <span class="text-truncate d-inline-block" style="max-width: 200px;">{{ result.target_value }}</span>
+                                            {% else %}
+                                            {{ result.target_value }}
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Zeichensatz:</th>
+                                        <td>{{ result.character_set }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Versuche:</th>
+                                        <td>{{ "{:,}".format(result.attempts) }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Zeit:</th>
+                                        <td>{{ "%.2f"|format(result.elapsed_time) }} Sekunden</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Ergebnis:</th>
+                                        <td>
+                                            {% if result.found %}
+                                            <span class="badge bg-success">Erfolg</span>
+                                            {% else %}
+                                            <span class="badge bg-danger">Fehlgeschlagen</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% if result.found %}
+                                    <tr>
+                                        <th>Gefundener Wert:</th>
+                                        <td>
+                                            <span class="found-value text-success">{{ result.password_found }}</span>
+                                        </td>
+                                    </tr>
+                                    {% endif %}
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card border-dark h-100">
+                            <div class="card-header bg-dark text-white">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-chart-pie me-2"></i>Leistungsanalyse
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span>Versuche pro Sekunde:</span>
+                                        <span class="text-primary">{{ "{:,.0f}".format(result.attempts / result.elapsed_time) }}</span>
+                                    </div>
+                                    <div class="progress mb-3" style="height: 10px;">
+                                        <div class="progress-bar bg-primary" style="width: {{ min(100, (result.attempts / result.elapsed_time) / 5000 * 100) }}%"></div>
+                                    </div>
                                 </div>
                                 
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="result-card mb-3">
-                                            <div class="result-card-title">Zieleigenschaften</div>
-                                            <div class="result-card-content">
-                                                <table class="table table-sm">
-                                                    <tr>
-                                                        <td>Zieltyp:</td>
-                                                        <td>{{ result.target_type }}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Zeichensatz:</td>
-                                                        <td>{{ result.character_set }}</td>
-                                                    </tr>
-                                                </table>
-                                            </div>
-                                        </div>
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span>Suchraum erkundet:</span>
+                                        <span class="text-warning">
+                                            {% if result.found %}
+                                            {{ "%.2f"|format(result.attempts / (10**(min(8, form.max_length.data)) if result.character_set == 'numeric' else 26**(min(6, form.max_length.data)) if result.character_set == 'alpha' else 36**(min(6, form.max_length.data))) * 100) }}%
+                                            {% else %}
+                                            100%
+                                            {% endif %}
+                                        </span>
                                     </div>
-                                    <div class="col-md-6">
-                                        <div class="result-card mb-3">
-                                            <div class="result-card-title">Leistungsmetriken</div>
-                                            <div class="result-card-content">
-                                                <table class="table table-sm">
-                                                    <tr>
-                                                        <td>Versuche:</td>
-                                                        <td>{{ result.attempts }}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Zeit:</td>
-                                                        <td>{{ "%.2f"|format(result.elapsed_time) }} s</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Rate:</td>
-                                                        <td>{{ "%.2f"|format(result.attempts / result.elapsed_time) }} v/s</td>
-                                                    </tr>
-                                                </table>
-                                            </div>
-                                        </div>
+                                    <div class="progress mb-3" style="height: 10px;">
+                                        <div class="progress-bar bg-warning" style="width: {{ "%.0f"|format(min(100, result.attempts / 10000 * 100)) }}%"></div>
                                     </div>
                                 </div>
                                 
-                                <div class="code-block mt-2">
-                                    <div class="code-title">
-                                        <i class="fas fa-terminal me-2"></i>Simulationsergebnis
+                                <div class="mb-4">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span>Effizienz:</span>
+                                        <span class="text-success">
+                                            {% if result.found %}
+                                            Hoch (Erfolg)
+                                            {% else %}
+                                            Niedrig (Nicht gefunden)
+                                            {% endif %}
+                                        </span>
                                     </div>
-                                    <div class="code-content">
-                                        {% if result.found %}
-                                        <div class="text-success mb-2">
-                                            <i class="fas fa-unlock me-2"></i>Ziel wurde geknackt!
-                                        </div>
+                                    <div class="progress" style="height: 10px;">
+                                        <div class="progress-bar {{ 'bg-success' if result.found else 'bg-danger' }}" 
+                                             style="width: {{ '100%' if result.found else '35%' }}"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="alert alert-dark mb-0">
+                                    <div class="d-flex">
+                                        <i class="fas fa-info-circle me-2 text-primary"></i>
                                         <div>
-                                            <span class="text-muted">Target Value:</span> 
-                                            <span class="text-warning">{{ result.target_value }}</span>
+                                            <h6 class="mb-1">Fazit</h6>
+                                            <p class="small mb-0">
+                                                {% if result.found %}
+                                                    {% if result.target_type == 'pin' %}
+                                                    PINs mit {{ result.target_value|length }} Stellen können in Sekundenschnelle geknackt werden. Verwenden Sie mindestens 6-stellige PINs.
+                                                    {% elif result.target_type == 'password' %}
+                                                        {% if result.target_value|length <= 4 %}
+                                                    Kurze Passwörter sind extrem unsicher. Verwenden Sie mindestens 12 Zeichen mit einer Mischung aus Buchstaben, Zahlen und Sonderzeichen.
+                                                        {% elif result.target_value|length <= 6 %}
+                                                    Dieses Passwort bietet minimalen Schutz. Erhöhen Sie die Länge auf mindestens 12 Zeichen und verwenden Sie verschiedene Zeichentypen.
+                                                        {% else %}
+                                                    Passwörter dieser Länge bieten besseren Schutz, können aber durch Brute-Force oder Dictionary-Angriffe gefährdet sein.
+                                                        {% endif %}
+                                                    {% elif result.target_type == 'hash' %}
+                                                    Diese Hash-Funktion bietet keinen ausreichenden Schutz. Verwenden Sie stärkere Hash-Algorithmen mit Salt.
+                                                    {% endif %}
+                                                {% else %}
+                                                    {% if result.target_type == 'password' and result.target_value|length >= 8 %}
+                                                    Komplexe Passwörter mit ausreichender Länge bieten guten Schutz gegen Brute-Force-Angriffe.
+                                                    {% elif result.target_type == 'hash' %}
+                                                    Dieser Hash konnte nicht geknackt werden, was auf eine stärkere Verschlüsselung hinweist.
+                                                    {% else %}
+                                                    Das Ziel konnte nicht geknackt werden, aber erwägen Sie trotzdem eine Erhöhung der Komplexität.
+                                                    {% endif %}
+                                                {% endif %}
+                                            </p>
                                         </div>
-                                        <div>
-                                            <span class="text-muted">Gefundenes Passwort:</span> 
-                                            <span class="text-success">{{ result.password_found }}</span>
-                                        </div>
-                                        <div class="mt-3 text-muted">
-                                            Die Simulation konnte erfolgreich das Passwort finden. In einer realen Situation
-                                            hätte dies durch einen Brute-Force-Angriff mit {{ result.attempts }} Versuchen gedauert.
-                                        </div>
-                                        {% else %}
-                                        <div class="text-danger mb-2">
-                                            <i class="fas fa-lock me-2"></i>Ziel konnte nicht geknackt werden
-                                        </div>
-                                        <div class="mt-3 text-muted">
-                                            Nach {{ result.attempts }} simulierten Versuchen konnte kein passendes Ergebnis gefunden werden.
-                                            Mögliche Gründe: Das Passwort ist zu komplex, liegt außerhalb der Suchparameter oder verwendet
-                                            Zeichen, die nicht im gewählten Zeichensatz enthalten sind.
-                                        </div>
-                                        {% endif %}
                                     </div>
-                                </div>
-                                
-                                <div class="alert alert-info mt-4 mb-0">
-                                    <i class="fas fa-lightbulb me-2"></i>
-                                    <strong>Sicherheitshinweis:</strong> Starke Passwörter sollten mindestens 12 Zeichen lang sein und 
-                                    eine Mischung aus Buchstaben, Zahlen und Sonderzeichen enthalten. Komplexe Passwörter mit solchen
-                                    Eigenschaften sind gegen Brute-Force-Angriffe sehr widerstandsfähig.
                                 </div>
                             </div>
                         </div>
-                        {% else %}
-                        <div class="card border-dark h-100">
-                            <div class="card-header bg-dark text-white">
-                                <h4 class="mb-0"><i class="fas fa-info-circle me-2"></i>Informationen</h4>
-                            </div>
-                            <div class="card-body">
-                                <h5>Wie funktioniert ein Brute-Force-Angriff?</h5>
-                                <p>
-                                    Ein Brute-Force-Angriff ist eine Methode zum Erraten von Passwörtern durch systematisches 
-                                    Ausprobieren aller möglichen Kombinationen, bis die richtige gefunden wird.
-                                </p>
-                                
-                                <div class="card border-dark mb-3">
-                                    <div class="card-header">Komplexität von Passwörtern</div>
-                                    <div class="card-body">
-                                        <table class="table table-striped">
-                                            <thead>
-                                                <tr>
-                                                    <th>Passwortlänge</th>
-                                                    <th>Nur Zahlen</th>
-                                                    <th>Kleinbuchstaben</th>
-                                                    <th>Alphanumerisch</th>
-                                                    <th>Kompletter Zeichensatz</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td>4 Zeichen</td>
-                                                    <td>10.000</td>
-                                                    <td>456.976</td>
-                                                    <td>1.679.616</td>
-                                                    <td>7.311.616</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>6 Zeichen</td>
-                                                    <td>1.000.000</td>
-                                                    <td>308.915.776</td>
-                                                    <td>2.176.782.336</td>
-                                                    <td>56.800.235.584</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>8 Zeichen</td>
-                                                    <td>100.000.000</td>
-                                                    <td>208.827.064.576</td>
-                                                    <td>2.821.109.907.456</td>
-                                                    <td>6.634.204.312.890.625</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                                
-                                <div class="alert alert-warning">
-                                    <i class="fas fa-shield-alt me-2"></i>
-                                    <strong>Schutzmaßnahmen:</strong>
-                                    <ul class="mb-0 mt-1">
-                                        <li>Verwenden Sie lange, komplexe Passwörter</li>
-                                        <li>Nutzen Sie Passwortregulatoren (Rate Limiting)</li>
-                                        <li>Verwenden Sie Zwei-Faktor-Authentifizierung</li>
-                                        <li>Blockieren Sie Konten nach mehreren fehlgeschlagenen Versuchen</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                        {% endif %}
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+{% endif %}
 {% endblock %}
 
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Target type change handler
+    // Elements
     const targetTypeSelect = document.getElementById('target_type');
-    const targetValueField = document.getElementById('target_value');
+    const targetValueInput = document.getElementById('target_value');
     const charsetSelect = document.getElementById('character_set');
+    const minLengthInput = document.getElementById('min_length');
+    const maxLengthInput = document.getElementById('max_length');
     
-    if (targetTypeSelect && targetValueField) {
-        targetTypeSelect.addEventListener('change', function() {
-            switch(this.value) {
-                case 'pin':
-                    targetValueField.placeholder = 'PIN Code (z.B. 1234)';
-                    charsetSelect.value = 'numeric';
-                    break;
-                case 'password':
-                    targetValueField.placeholder = 'Passwort zum Testen';
-                    break;
-                case 'hash':
-                    targetValueField.placeholder = 'Hash (MD5, SHA1, etc.)';
-                    break;
+    // Display elements
+    const charsetSizeEl = document.getElementById('charsetSize');
+    const combinationsEl = document.getElementById('combinations');
+    const crackTimeEl = document.getElementById('crackTime');
+    const strengthIndicator = document.getElementById('strengthIndicator');
+    const strengthText = document.getElementById('strengthText');
+    
+    // Progress indicators
+    const charsetSizeIndicator = document.getElementById('charsetSizeIndicator');
+    const combinationsIndicator = document.getElementById('combinationsIndicator');
+    const crackTimeIndicator = document.getElementById('crackTimeIndicator');
+    
+    // Character set sizes
+    const charsetSizes = {
+        'numeric': 10,        // 0-9
+        'alpha': 26,          // a-z
+        'alphanumeric': 36,   // a-z, 0-9
+        'full': 72            // a-z, A-Z, 0-9, symbols
+    };
+    
+    // Function to update complexity analysis
+    function updateComplexityAnalysis() {
+        const targetType = targetTypeSelect.value;
+        const targetValue = targetValueInput.value;
+        const charset = charsetSelect.value;
+        const minLength = parseInt(minLengthInput.value) || 1;
+        const maxLength = parseInt(maxLengthInput.value) || 4;
+        
+        // Charset size
+        const charsetSize = charsetSizes[charset] || 10;
+        charsetSizeEl.textContent = charsetSize;
+        const charsetPercentage = (charsetSize / charsetSizes.full) * 100;
+        charsetSizeIndicator.style.width = `${charsetPercentage}%`;
+        
+        // Combinations
+        let combinations = 0;
+        for (let len = minLength; len <= maxLength; len++) {
+            combinations += Math.pow(charsetSize, len);
+        }
+        
+        // Format large numbers
+        combinationsEl.textContent = combinations.toLocaleString();
+        
+        // Combinations indicator (logarithmic scale for better visualization)
+        const maxPossible = Math.pow(charsetSizes.full, 8); // theoretical maximum
+        const combinationsPercentage = Math.min(100, (Math.log(combinations) / Math.log(maxPossible)) * 100);
+        combinationsIndicator.style.width = `${combinationsPercentage}%`;
+        
+        // Estimate cracking time (assuming 1000 attempts per second for simulation)
+        const attemptsPerSecond = 1000;
+        const seconds = combinations / attemptsPerSecond;
+        
+        // Format the time
+        let timeString;
+        if (seconds < 60) {
+            timeString = `${seconds.toFixed(2)} Sekunden`;
+        } else if (seconds < 3600) {
+            timeString = `${(seconds / 60).toFixed(2)} Minuten`;
+        } else if (seconds < 86400) {
+            timeString = `${(seconds / 3600).toFixed(2)} Stunden`;
+        } else if (seconds < 31536000) {
+            timeString = `${(seconds / 86400).toFixed(2)} Tage`;
+        } else {
+            timeString = `${(seconds / 31536000).toFixed(2)} Jahre`;
+        }
+        
+        crackTimeEl.textContent = timeString;
+        
+        // Crack time indicator (logarithmic scale)
+        const maxTime = 31536000 * 100; // 100 years
+        const timePercentage = Math.min(100, (Math.log(seconds + 1) / Math.log(maxTime)) * 100);
+        crackTimeIndicator.style.width = `${timePercentage}%`;
+        
+        // Password strength analysis (only for password targets)
+        if (targetType === 'password' && targetValue) {
+            const length = targetValue.length;
+            const hasUpper = /[A-Z]/.test(targetValue);
+            const hasLower = /[a-z]/.test(targetValue);
+            const hasDigit = /\d/.test(targetValue);
+            const hasSymbol = /[^A-Za-z0-9]/.test(targetValue);
+            
+            const varietyCount = [hasUpper, hasLower, hasDigit, hasSymbol].filter(Boolean).length;
+            
+            // Calculate strength percentage
+            let strengthPercentage = 0;
+            
+            // Length contributes up to 60% of strength
+            const lengthContribution = Math.min(60, length * 5);
+            
+            // Variety contributes up to 40% of strength
+            const varietyContribution = varietyCount * 10;
+            
+            strengthPercentage = lengthContribution + varietyContribution;
+            strengthPercentage = Math.min(100, strengthPercentage);
+            
+            // Set the indicator
+            strengthIndicator.style.width = `${strengthPercentage}%`;
+            
+            // Set color based on strength
+            if (strengthPercentage < 30) {
+                strengthIndicator.className = 'progress-bar bg-danger';
+                strengthText.textContent = 'Sehr schwach - Leicht zu erraten';
+            } else if (strengthPercentage < 50) {
+                strengthIndicator.className = 'progress-bar bg-warning';
+                strengthText.textContent = 'Schwach - Bietet minimalen Schutz';
+            } else if (strengthPercentage < 70) {
+                strengthIndicator.className = 'progress-bar bg-info';
+                strengthText.textContent = 'Mittel - Akzeptabel für nicht-kritische Konten';
+            } else if (strengthPercentage < 90) {
+                strengthIndicator.className = 'progress-bar bg-primary';
+                strengthText.textContent = 'Stark - Guter Schutz gegen die meisten Angriffe';
+            } else {
+                strengthIndicator.className = 'progress-bar bg-success';
+                strengthText.textContent = 'Sehr stark - Exzellenter Schutz';
             }
-        });
+        } else {
+            // Reset for non-password targets
+            strengthIndicator.style.width = '0%';
+            strengthText.textContent = 'Geben Sie einen Wert ein, um eine Analyse zu erhalten.';
+        }
+    }
+    
+    // Add event listeners
+    targetTypeSelect.addEventListener('change', updateComplexityAnalysis);
+    targetValueInput.addEventListener('input', updateComplexityAnalysis);
+    charsetSelect.addEventListener('change', updateComplexityAnalysis);
+    minLengthInput.addEventListener('input', updateComplexityAnalysis);
+    maxLengthInput.addEventListener('input', updateComplexityAnalysis);
+    
+    // Initialize complexity analysis
+    updateComplexityAnalysis();
+    
+    // Animation for simulation log if results exist
+    const simulationLog = document.getElementById('simulationLog');
+    if (simulationLog) {
+        // Add animation class
+        simulationLog.classList.add('typewriter-effect');
+        
+        // Add animation delay to each line
+        const lines = simulationLog.children;
+        for (let i = 0; i < lines.length; i++) {
+            lines[i].style.animationDelay = `${i * 0.1}s`;
+            lines[i].style.opacity = 0;
+            lines[i].classList.add('animate-in');
+        }
     }
 });
 </script>
 <style>
-.result-card {
-    border: 1px solid #333;
-    border-radius: 4px;
-    overflow: hidden;
-}
-
-.result-card-title {
-    background-color: #0c0c0c;
-    color: var(--hacker-primary);
-    padding: 0.5rem;
-    font-size: 0.9rem;
-    font-weight: bold;
-    border-bottom: 1px solid #333;
-}
-
-.result-card-content {
-    background-color: #131313;
-    padding: 0.5rem;
-}
-
-.code-block {
-    border: 1px solid #333;
-    border-radius: 4px;
-    overflow: hidden;
-}
-
-.code-title {
-    background-color: #0c0c0c;
-    color: var(--hacker-primary);
-    padding: 0.5rem;
-    font-size: 0.9rem;
-    font-weight: bold;
-    border-bottom: 1px solid #333;
-}
-
-.code-content {
-    background-color: #131313;
-    padding: 1rem;
+.terminal-output {
     font-family: var(--mono-font);
+    background-color: #0c0c0c;
+    color: #e0e0e0;
+    padding: 1rem;
+    border-radius: 4px;
+    border: 1px solid #333;
+    height: 250px;
+    overflow-y: auto;
+    line-height: 1.6;
+}
+
+.terminal-output div {
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+
+.found-value {
+    font-family: var(--mono-font);
+    font-weight: bold;
+    padding: 0.25rem 0.5rem;
+    border: 1px solid currentColor;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+/* Animation styles */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-in {
+    animation: fadeIn 0.5s ease-out forwards;
 }
 </style>
 {% endblock %}
