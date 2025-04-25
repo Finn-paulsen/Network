@@ -544,6 +544,36 @@ code {
     animation: blink 1.5s infinite;
 }
 
+@keyframes blinkSlow {
+    0% { opacity: 1; }
+    50% { opacity: 0.3; }
+    100% { opacity: 1; }
+}
+
+.blink-slow {
+    animation: blinkSlow 2.5s infinite;
+}
+
+/* Success animation */
+@keyframes successPulse {
+    0% { 
+        box-shadow: 0 0 5px rgba(25, 135, 84, 0.5); 
+        transform: scale(1);
+    }
+    50% { 
+        box-shadow: 0 0 15px rgba(25, 135, 84, 0.8); 
+        transform: scale(1.02);
+    }
+    100% { 
+        box-shadow: 0 0 5px rgba(25, 135, 84, 0.5); 
+        transform: scale(1);
+    }
+}
+
+.success-found {
+    animation: successPulse 2s infinite;
+}
+
 /* Feature list */
 .feature-list {
     list-style: none;
