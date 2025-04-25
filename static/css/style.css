@@ -533,6 +533,28 @@ code {
     animation: fadeIn 0.5s ease-out forwards;
 }
 
+/* Blinking Badge Animation */
+@keyframes blink {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+.blink-badge {
+    animation: blink 1.5s infinite;
+}
+
+/* Feature list */
+.feature-list {
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 0;
+}
+
+.feature-list li {
+    margin-bottom: 0.5rem;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .terminal-output, .hacker-terminal {

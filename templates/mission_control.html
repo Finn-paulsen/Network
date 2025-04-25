@@ -1,0 +1,1578 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="mission-control-container">
+    <!-- Header with system status -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="card border-dark hacker-card">
+                <div class="card-header bg-dark text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h2 class="mb-0">
+                            <i class="fas fa-satellite-dish me-2"></i>Mission Control
+                        </h2>
+                        <div class="d-flex align-items-center">
+                            <div class="status-indicator status-warning me-2"></div>
+                            <span class="badge bg-warning terminal-badge" id="systemStatus">STANDBY</span>
+                            <div class="ms-2 system-time">
+                                <span id="systemTime">00:00:00</span>
+                                <span class="system-date" id="systemDate">01-01-2025</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main control interface -->
+    <div class="row mb-3">
+        <!-- Left panel - System controls -->
+        <div class="col-md-3">
+            <div class="card border-dark hacker-card h-100">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0"><i class="fas fa-server me-2"></i>Systemsteuerung</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="system-controls">
+                        <div class="control-section">
+                            <div class="control-section-header">
+                                <i class="fas fa-power-off me-2"></i>System Power
+                            </div>
+                            <div class="control-section-body">
+                                <div class="control-buttons">
+                                    <button class="btn btn-sm btn-outline-danger me-2" id="powerBtn">
+                                        <i class="fas fa-power-off me-1"></i>INIT
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-warning" id="rebootBtn" disabled>
+                                        <i class="fas fa-sync me-1"></i>REBOOT
+                                    </button>
+                                </div>
+                                <div class="progress mt-2 mb-0" style="height: 5px;">
+                                    <div class="progress-bar bg-danger" id="powerProgress" role="progressbar" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="control-section">
+                            <div class="control-section-header">
+                                <i class="fas fa-shield-alt me-2"></i>Security Level
+                            </div>
+                            <div class="control-section-body">
+                                <div class="security-level">
+                                    <input type="range" class="form-range" min="1" max="5" value="3" id="securityLevelSlider" disabled>
+                                    <div class="d-flex justify-content-between mt-1">
+                                        <span class="security-level-label">Low</span>
+                                        <span class="security-level-label fw-bold" id="securityLevelValue">Medium</span>
+                                        <span class="security-level-label">High</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="control-section">
+                            <div class="control-section-header">
+                                <i class="fas fa-satellite me-2"></i>Connection
+                            </div>
+                            <div class="control-section-body">
+                                <div class="connection-controls">
+                                    <button class="btn btn-sm btn-outline-primary w-100 mb-2" id="establishConnectionBtn" disabled>
+                                        <i class="fas fa-plug me-1"></i>Establish Connection
+                                    </button>
+                                    <div class="connection-status">
+                                        <div class="d-flex justify-content-between">
+                                            <span>Signal Strength:</span>
+                                            <span id="signalStrength">0%</span>
+                                        </div>
+                                        <div class="progress mt-1 mb-2" style="height: 5px;">
+                                            <div class="progress-bar bg-info" id="signalProgress" role="progressbar" style="width: 0%"></div>
+                                        </div>
+                                        <div class="d-flex justify-content-between">
+                                            <span>Encryption:</span>
+                                            <span id="encryptionStatus">Inactive</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="control-section">
+                            <div class="control-section-header">
+                                <i class="fas fa-network-wired me-2"></i>Network
+                            </div>
+                            <div class="control-section-body">
+                                <div class="network-controls">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="vpnSwitch" disabled>
+                                            <label class="form-check-label" for="vpnSwitch">VPN</label>
+                                        </div>
+                                        <span class="ms-auto badge bg-secondary" id="vpnStatus">Offline</span>
+                                    </div>
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="proxySwitch" disabled>
+                                            <label class="form-check-label" for="proxySwitch">Proxy Chain</label>
+                                        </div>
+                                        <span class="ms-auto badge bg-secondary" id="proxyStatus">Offline</span>
+                                    </div>
+                                    <div class="d-flex align-items-center">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="torSwitch" disabled>
+                                            <label class="form-check-label" for="torSwitch">TOR Network</label>
+                                        </div>
+                                        <span class="ms-auto badge bg-secondary" id="torStatus">Offline</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Middle panel - Main terminal -->
+        <div class="col-md-6">
+            <div class="card border-dark hacker-card h-100">
+                <div class="card-header bg-dark text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="fas fa-terminal me-2"></i>Main Console</h5>
+                        <div class="console-controls">
+                            <button class="btn btn-sm btn-outline-light me-1" id="clearConsoleBtn" disabled>
+                                <i class="fas fa-eraser"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-success" id="executeBtn" disabled>
+                                <i class="fas fa-play"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="console-display">
+                        <div class="console-header">
+                            <div class="d-flex justify-content-between">
+                                <span>Terminal v3.1.5</span>
+                                <span>Status: <span id="consoleStatus">Standby</span></span>
+                            </div>
+                        </div>
+                        <div class="console-content" id="consoleContent">
+                            <div class="console-line">CYBER INFILTRATION SYSTEM</div>
+                            <div class="console-line">Copyright (c) 2025 Secure Operations Division</div>
+                            <div class="console-line">--------------------------------------------</div>
+                            <div class="console-line mt-2">SYSTEM IN STANDBY MODE</div>
+                            <div class="console-line">Initialize using the POWER button on left panel</div>
+                        </div>
+                        <div class="console-input-line" id="consoleInputLine" style="display: none;">
+                            <span class="console-prompt" id="consolePrompt">root@cyber:~#</span>
+                            <input type="text" class="console-input" id="consoleInput" disabled>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Right panel - Target system & Payload -->
+        <div class="col-md-3">
+            <div class="card border-dark hacker-card h-100">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0"><i class="fas fa-crosshairs me-2"></i>Target System</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="system-controls">
+                        <div class="control-section">
+                            <div class="control-section-header">
+                                <i class="fas fa-search me-2"></i>Target Selection
+                            </div>
+                            <div class="control-section-body">
+                                <select class="form-select form-select-sm mb-2" id="targetSelect" disabled>
+                                    <option value="">Select Target...</option>
+                                    <option value="corp_server">Corporate Server</option>
+                                    <option value="web_server">Web Server</option>
+                                    <option value="database">Database Server</option>
+                                </select>
+                                <div class="target-info">
+                                    <div class="d-flex justify-content-between">
+                                        <span>IP Address:</span>
+                                        <span id="targetIp">--.--.--.--</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <span>OS:</span>
+                                        <span id="targetOs">Unknown</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <span>Security:</span>
+                                        <span id="targetSecurity">Unknown</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="control-section">
+                            <div class="control-section-header">
+                                <i class="fas fa-virus me-2"></i>Payload Selection
+                            </div>
+                            <div class="control-section-body">
+                                <select class="form-select form-select-sm mb-2" id="payloadSelect" disabled>
+                                    <option value="">Select Payload...</option>
+                                    <option value="backdoor">Remote Backdoor</option>
+                                    <option value="keylogger">Keylogger</option>
+                                    <option value="ransomware">Ransomware Simulator</option>
+                                </select>
+                                <div class="payload-info">
+                                    <div class="d-flex justify-content-between">
+                                        <span>Size:</span>
+                                        <span id="payloadSize">-- KB</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <span>Detection Rate:</span>
+                                        <span id="payloadDetection">--</span>
+                                    </div>
+                                </div>
+                                <button class="btn btn-sm btn-outline-danger w-100 mt-2" id="uploadBtn" disabled>
+                                    <i class="fas fa-upload me-1"></i>UPLOAD TO TARGET
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="control-section">
+                            <div class="control-section-header">
+                                <i class="fas fa-tasks me-2"></i>Execution Control
+                            </div>
+                            <div class="control-section-body">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Upload Status:</span>
+                                    <span id="uploadStatus">Not Started</span>
+                                </div>
+                                <div class="progress mb-2" style="height: 5px;">
+                                    <div class="progress-bar bg-info" id="uploadProgress" role="progressbar" style="width: 0%"></div>
+                                </div>
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="standbySwitch" disabled>
+                                        <label class="form-check-label" for="standbySwitch">Standby Mode</label>
+                                    </div>
+                                </div>
+                                <button class="btn btn-sm btn-success w-100" id="executePayloadBtn" disabled>
+                                    <i class="fas fa-play-circle me-1"></i>EXECUTE PAYLOAD
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bottom panel - System status and logs -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card border-dark hacker-card">
+                <div class="card-header bg-dark text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="fas fa-stream me-2"></i>System Logs</h5>
+                        <span class="badge bg-info terminal-badge" id="logEntryCount">0 entries</span>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="log-container">
+                        <div class="log-content" id="systemLogs">
+                            <!-- Log entries will be added here by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Hidden Mission Status Modal -->
+    <div class="modal fade" id="missionCompleteModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-dark hacker-card">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title">
+                        <i class="fas fa-flag-checkered me-2"></i>Mission Status
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mission-status">
+                        <div class="mission-result text-center mb-3">
+                            <i class="fas fa-check-circle text-success mission-icon"></i>
+                            <h4 class="mission-title">Mission Accomplished!</h4>
+                        </div>
+                        <div class="mission-details">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Target:</span>
+                                <span id="missionTarget">Corporate Server</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Payload:</span>
+                                <span id="missionPayload">Remote Backdoor</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Status:</span>
+                                <span class="text-success">Successfully Deployed</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Detection:</span>
+                                <span id="missionDetection">None</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span>Time to Complete:</span>
+                                <span id="missionTime">00:03:45</span>
+                            </div>
+                        </div>
+                        <div class="mission-reward text-center mt-3">
+                            <h5>Rewards</h5>
+                            <div class="badge bg-success fs-5 mb-2">+100 XP</div>
+                            <div class="badge bg-primary fs-5">New Payload Unlocked!</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-dark">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="newMissionBtn">New Mission</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // System elements
+    const powerBtn = document.getElementById('powerBtn');
+    const rebootBtn = document.getElementById('rebootBtn');
+    const securityLevelSlider = document.getElementById('securityLevelSlider');
+    const securityLevelValue = document.getElementById('securityLevelValue');
+    const establishConnectionBtn = document.getElementById('establishConnectionBtn');
+    const signalStrength = document.getElementById('signalStrength');
+    const signalProgress = document.getElementById('signalProgress');
+    const encryptionStatus = document.getElementById('encryptionStatus');
+    const vpnSwitch = document.getElementById('vpnSwitch');
+    const proxySwitch = document.getElementById('proxySwitch');
+    const torSwitch = document.getElementById('torSwitch');
+    const vpnStatus = document.getElementById('vpnStatus');
+    const proxyStatus = document.getElementById('proxyStatus');
+    const torStatus = document.getElementById('torStatus');
+    
+    // Console elements
+    const consoleContent = document.getElementById('consoleContent');
+    const consoleInputLine = document.getElementById('consoleInputLine');
+    const consoleInput = document.getElementById('consoleInput');
+    const consoleStatus = document.getElementById('consoleStatus');
+    const clearConsoleBtn = document.getElementById('clearConsoleBtn');
+    const executeBtn = document.getElementById('executeBtn');
+    
+    // Target elements
+    const targetSelect = document.getElementById('targetSelect');
+    const targetIp = document.getElementById('targetIp');
+    const targetOs = document.getElementById('targetOs');
+    const targetSecurity = document.getElementById('targetSecurity');
+    
+    // Payload elements
+    const payloadSelect = document.getElementById('payloadSelect');
+    const payloadSize = document.getElementById('payloadSize');
+    const payloadDetection = document.getElementById('payloadDetection');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const uploadStatus = document.getElementById('uploadStatus');
+    const uploadProgress = document.getElementById('uploadProgress');
+    const standbySwitch = document.getElementById('standbySwitch');
+    const executePayloadBtn = document.getElementById('executePayloadBtn');
+    
+    // System status elements
+    const systemStatus = document.getElementById('systemStatus');
+    const powerProgress = document.getElementById('powerProgress');
+    const systemLogs = document.getElementById('systemLogs');
+    const logEntryCount = document.getElementById('logEntryCount');
+    const systemTime = document.getElementById('systemTime');
+    const systemDate = document.getElementById('systemDate');
+    
+    // Mission modal elements
+    const missionCompleteModal = new bootstrap.Modal(document.getElementById('missionCompleteModal'));
+    const missionTarget = document.getElementById('missionTarget');
+    const missionPayload = document.getElementById('missionPayload');
+    const missionDetection = document.getElementById('missionDetection');
+    const missionTime = document.getElementById('missionTime');
+    const newMissionBtn = document.getElementById('newMissionBtn');
+    
+    // Target system data
+    const targetSystems = {
+        'corp_server': {
+            ip: '192.168.1.45',
+            os: 'Windows Server 2019',
+            security: 'Medium',
+            ports: [22, 80, 443, 3389]
+        },
+        'web_server': {
+            ip: '104.18.22.164',
+            os: 'Ubuntu 20.04 LTS',
+            security: 'High',
+            ports: [22, 80, 443]
+        },
+        'database': {
+            ip: '10.0.14.87',
+            os: 'CentOS 7',
+            security: 'Low',
+            ports: [22, 1433, 3306]
+        }
+    };
+    
+    // Payload data
+    const payloads = {
+        'backdoor': {
+            size: '358 KB',
+            detection: 'Low (12%)',
+            description: 'Creates a persistent reverse shell allowing remote access.'
+        },
+        'keylogger': {
+            size: '245 KB',
+            detection: 'Medium (38%)',
+            description: 'Silently captures all keystrokes and sends them to a remote server.'
+        },
+        'ransomware': {
+            size: '1.2 MB',
+            detection: 'High (76%)',
+            description: 'Encrypts files and displays a ransom message (simulation only).'
+        }
+    };
+    
+    // System state
+    let systemPowered = false;
+    let connectionEstablished = false;
+    let targetSelected = false;
+    let payloadSelected = false;
+    let payloadUploaded = false;
+    let payloadExecuted = false;
+    let inStandbyMode = false;
+    
+    // Log counter
+    let logCount = 0;
+    
+    // Initialize the system clock
+    updateSystemTime();
+    setInterval(updateSystemTime, 1000);
+    
+    // Event listeners
+    powerBtn.addEventListener('click', togglePower);
+    rebootBtn.addEventListener('click', rebootSystem);
+    establishConnectionBtn.addEventListener('click', establishConnection);
+    clearConsoleBtn.addEventListener('click', clearConsole);
+    executeBtn.addEventListener('click', executeCommand);
+    targetSelect.addEventListener('change', selectTarget);
+    payloadSelect.addEventListener('change', selectPayload);
+    uploadBtn.addEventListener('click', uploadPayload);
+    standbySwitch.addEventListener('change', toggleStandby);
+    executePayloadBtn.addEventListener('click', executePayload);
+    securityLevelSlider.addEventListener('input', updateSecurityLevel);
+    newMissionBtn.addEventListener('click', resetMission);
+    
+    // Network switches
+    vpnSwitch.addEventListener('change', function() {
+        toggleNetworkService('vpn', vpnStatus, this.checked);
+    });
+    
+    proxySwitch.addEventListener('change', function() {
+        toggleNetworkService('proxy', proxyStatus, this.checked);
+    });
+    
+    torSwitch.addEventListener('change', function() {
+        toggleNetworkService('tor', torStatus, this.checked);
+    });
+    
+    // Console input handling
+    consoleInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            processConsoleInput();
+        }
+    });
+    
+    // Functions
+    function togglePower() {
+        if (!systemPowered) {
+            // Power on sequence
+            systemStatus.textContent = 'BOOTING';
+            systemStatus.className = 'badge bg-warning terminal-badge';
+            
+            addLogEntry('System boot sequence initiated');
+            
+            let progress = 0;
+            const bootInterval = setInterval(function() {
+                progress += 5;
+                powerProgress.style.width = progress + '%';
+                
+                // Add boot messages at different stages
+                if (progress === 15) {
+                    addConsoleMessage('Initializing system kernel...');
+                    addLogEntry('Kernel initialization in progress');
+                } else if (progress === 35) {
+                    addConsoleMessage('Loading core modules...');
+                    addLogEntry('Loading essential system modules');
+                } else if (progress === 50) {
+                    addConsoleMessage('Initializing network interfaces...');
+                    addLogEntry('Network subsystem initialization');
+                } else if (progress === 70) {
+                    addConsoleMessage('Starting security services...');
+                    addLogEntry('Security services activated');
+                } else if (progress === 90) {
+                    addConsoleMessage('System checks completed.');
+                    addLogEntry('System integrity verified');
+                }
+                
+                if (progress >= 100) {
+                    clearInterval(bootInterval);
+                    completeBootSequence();
+                }
+            }, 200);
+            
+            // Change button text
+            powerBtn.innerHTML = '<i class="fas fa-power-off me-1"></i>SHUTDOWN';
+            systemPowered = true;
+        } else {
+            // Power off sequence
+            shutdownSystem();
+        }
+    }
+    
+    function completeBootSequence() {
+        // Update system status
+        systemStatus.textContent = 'ONLINE';
+        systemStatus.className = 'badge bg-success terminal-badge';
+        
+        // Enable controls
+        rebootBtn.disabled = false;
+        securityLevelSlider.disabled = false;
+        establishConnectionBtn.disabled = false;
+        clearConsoleBtn.disabled = false;
+        consoleInput.disabled = false;
+        executeBtn.disabled = false;
+        vpnSwitch.disabled = false;
+        proxySwitch.disabled = false;
+        torSwitch.disabled = false;
+        
+        // Show console input line
+        consoleInputLine.style.display = 'flex';
+        
+        // Update console status
+        consoleStatus.textContent = 'Ready';
+        consoleStatus.className = 'text-success';
+        
+        // Add boot complete message
+        addConsoleMessage('');
+        addConsoleMessage('System boot completed successfully.');
+        addConsoleMessage('Type "help" for a list of available commands.');
+        addConsoleMessage('');
+        
+        addLogEntry('System boot sequence completed successfully');
+    }
+    
+    function rebootSystem() {
+        // Disable all controls first
+        disableAllControls();
+        
+        // Update status
+        systemStatus.textContent = 'REBOOTING';
+        systemStatus.className = 'badge bg-warning terminal-badge';
+        
+        addConsoleMessage('');
+        addConsoleMessage('System rebooting...');
+        addLogEntry('System reboot initiated');
+        
+        // Reset progress bars
+        powerProgress.style.width = '0%';
+        signalProgress.style.width = '0%';
+        uploadProgress.style.width = '0%';
+        
+        // Reset connection status
+        connectionEstablished = false;
+        signalStrength.textContent = '0%';
+        encryptionStatus.textContent = 'Inactive';
+        
+        // Reset target info
+        resetTargetInfo();
+        
+        // Reset payload info
+        resetPayloadInfo();
+        
+        // After delay, boot again
+        setTimeout(function() {
+            let progress = 0;
+            const bootInterval = setInterval(function() {
+                progress += 10;
+                powerProgress.style.width = progress + '%';
+                
+                if (progress >= 100) {
+                    clearInterval(bootInterval);
+                    completeBootSequence();
+                }
+            }, 100);
+        }, 2000);
+    }
+    
+    function shutdownSystem() {
+        // Update status
+        systemStatus.textContent = 'SHUTTING DOWN';
+        systemStatus.className = 'badge bg-danger terminal-badge';
+        
+        addConsoleMessage('');
+        addConsoleMessage('System shutting down...');
+        addLogEntry('System shutdown initiated');
+        
+        // Disable all controls
+        disableAllControls();
+        
+        // Reset connection
+        connectionEstablished = false;
+        signalStrength.textContent = '0%';
+        encryptionStatus.textContent = 'Inactive';
+        signalProgress.style.width = '0%';
+        
+        // Reset target info
+        resetTargetInfo();
+        
+        // Reset payload info
+        resetPayloadInfo();
+        
+        // After delay, complete shutdown
+        setTimeout(function() {
+            // Update status
+            systemStatus.textContent = 'STANDBY';
+            systemStatus.className = 'badge bg-warning terminal-badge';
+            
+            // Reset console
+            consoleContent.innerHTML = '';
+            addConsoleMessage('CYBER INFILTRATION SYSTEM');
+            addConsoleMessage('Copyright (c) 2025 Secure Operations Division');
+            addConsoleMessage('--------------------------------------------');
+            addConsoleMessage('');
+            addConsoleMessage('SYSTEM IN STANDBY MODE');
+            addConsoleMessage('Initialize using the POWER button on left panel');
+            
+            // Hide console input
+            consoleInputLine.style.display = 'none';
+            
+            // Update console status
+            consoleStatus.textContent = 'Standby';
+            consoleStatus.className = 'text-muted';
+            
+            // Reset button
+            powerBtn.innerHTML = '<i class="fas fa-power-off me-1"></i>INIT';
+            
+            // Reset progress bar
+            powerProgress.style.width = '0%';
+            
+            // Reset system state
+            systemPowered = false;
+            
+            addLogEntry('System shutdown completed');
+        }, 2000);
+    }
+    
+    function disableAllControls() {
+        // Disable all interactive controls
+        rebootBtn.disabled = true;
+        securityLevelSlider.disabled = true;
+        establishConnectionBtn.disabled = true;
+        clearConsoleBtn.disabled = true;
+        consoleInput.disabled = true;
+        executeBtn.disabled = true;
+        targetSelect.disabled = true;
+        payloadSelect.disabled = true;
+        uploadBtn.disabled = true;
+        standbySwitch.disabled = true;
+        executePayloadBtn.disabled = true;
+        vpnSwitch.disabled = true;
+        proxySwitch.disabled = true;
+        torSwitch.disabled = true;
+    }
+    
+    function establishConnection() {
+        if (!connectionEstablished) {
+            // Update button
+            establishConnectionBtn.disabled = true;
+            establishConnectionBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Connecting...';
+            
+            addConsoleMessage('Establishing connection to remote network...');
+            addLogEntry('Connection sequence initiated');
+            
+            // Simulate connection progress
+            let progress = 0;
+            const connectionInterval = setInterval(function() {
+                progress += Math.floor(Math.random() * 10) + 1;
+                progress = Math.min(progress, 100);
+                
+                signalProgress.style.width = progress + '%';
+                signalStrength.textContent = progress + '%';
+                
+                // Connection updates at different stages
+                if (progress >= 30 && progress < 31) {
+                    addConsoleMessage('Signal acquired. Establishing handshake...');
+                    addLogEntry('Network handshake in progress');
+                } else if (progress >= 60 && progress < 61) {
+                    addConsoleMessage('Handshake complete. Initiating encryption...');
+                    addLogEntry('Connection encryption initiated');
+                    encryptionStatus.textContent = 'Initializing';
+                } else if (progress >= 90 && progress < 91) {
+                    addConsoleMessage('Secure connection established.');
+                    addLogEntry('Secure connection established successfully');
+                    encryptionStatus.textContent = 'Active (AES-256)';
+                }
+                
+                if (progress >= 100) {
+                    clearInterval(connectionInterval);
+                    completeConnection();
+                }
+            }, 200);
+        } else {
+            // Disconnect
+            connectionEstablished = false;
+            
+            // Update signal
+            signalStrength.textContent = '0%';
+            signalProgress.style.width = '0%';
+            encryptionStatus.textContent = 'Inactive';
+            
+            // Update button
+            establishConnectionBtn.innerHTML = '<i class="fas fa-plug me-1"></i>Establish Connection';
+            
+            // Disable target controls
+            targetSelect.disabled = true;
+            payloadSelect.disabled = true;
+            uploadBtn.disabled = true;
+            executePayloadBtn.disabled = true;
+            standbySwitch.disabled = true;
+            
+            // Reset target and payload selections
+            resetTargetInfo();
+            resetPayloadInfo();
+            
+            addConsoleMessage('Connection terminated.');
+            addLogEntry('Connection terminated by user');
+        }
+    }
+    
+    function completeConnection() {
+        // Update connection state
+        connectionEstablished = true;
+        
+        // Update button
+        establishConnectionBtn.innerHTML = '<i class="fas fa-times me-1"></i>Disconnect';
+        establishConnectionBtn.disabled = false;
+        
+        // Enable target selection
+        targetSelect.disabled = false;
+        
+        addConsoleMessage('Remote connection established successfully.');
+        addConsoleMessage('Select a target system to proceed.');
+    }
+    
+    function selectTarget() {
+        const targetId = targetSelect.value;
+        
+        if (targetId) {
+            const target = targetSystems[targetId];
+            
+            // Update target info
+            targetIp.textContent = target.ip;
+            targetOs.textContent = target.os;
+            targetSecurity.textContent = target.security;
+            
+            targetSelected = true;
+            
+            // Enable payload selection
+            payloadSelect.disabled = false;
+            
+            addConsoleMessage(`Target system selected: ${targetSelect.options[targetSelect.selectedIndex].text} (${target.ip})`);
+            addConsoleMessage(`Operating System: ${target.os}`);
+            addConsoleMessage(`Security Level: ${target.security}`);
+            addConsoleMessage('Select a payload to continue.');
+            
+            addLogEntry(`Target system selected: ${targetSelect.options[targetSelect.selectedIndex].text}`);
+        } else {
+            resetTargetInfo();
+        }
+    }
+    
+    function resetTargetInfo() {
+        // Reset target display
+        targetIp.textContent = '--.--.--.--';
+        targetOs.textContent = 'Unknown';
+        targetSecurity.textContent = 'Unknown';
+        
+        // Reset select
+        targetSelect.value = '';
+        targetSelected = false;
+        
+        // Disable payload controls
+        payloadSelect.disabled = true;
+        
+        // Reset payload info as well
+        resetPayloadInfo();
+    }
+    
+    function selectPayload() {
+        const payloadId = payloadSelect.value;
+        
+        if (payloadId) {
+            const payload = payloads[payloadId];
+            
+            // Update payload info
+            payloadSize.textContent = payload.size;
+            payloadDetection.textContent = payload.detection;
+            
+            payloadSelected = true;
+            
+            // Enable upload button
+            uploadBtn.disabled = false;
+            
+            addConsoleMessage(`Payload selected: ${payloadSelect.options[payloadSelect.selectedIndex].text}`);
+            addConsoleMessage(`Payload size: ${payload.size}`);
+            addConsoleMessage(`Detection probability: ${payload.detection}`);
+            addConsoleMessage('Ready to upload payload to target system.');
+            
+            addLogEntry(`Payload selected: ${payloadSelect.options[payloadSelect.selectedIndex].text}`);
+        } else {
+            resetPayloadInfo();
+        }
+    }
+    
+    function resetPayloadInfo() {
+        // Reset payload display
+        payloadSize.textContent = '-- KB';
+        payloadDetection.textContent = '--';
+        
+        // Reset select
+        payloadSelect.value = '';
+        payloadSelected = false;
+        
+        // Reset upload status
+        uploadStatus.textContent = 'Not Started';
+        uploadProgress.style.width = '0%';
+        
+        // Disable payload controls
+        uploadBtn.disabled = true;
+        standbySwitch.disabled = true;
+        executePayloadBtn.disabled = true;
+        
+        // Reset states
+        payloadUploaded = false;
+        payloadExecuted = false;
+    }
+    
+    function uploadPayload() {
+        if (!payloadUploaded) {
+            // Disable upload button during upload
+            uploadBtn.disabled = true;
+            
+            // Update status
+            uploadStatus.textContent = 'Uploading...';
+            
+            addConsoleMessage('Initiating payload upload to target system...');
+            addLogEntry('Payload upload initiated');
+            
+            // Simulate upload progress
+            let progress = 0;
+            const uploadInterval = setInterval(function() {
+                progress += Math.floor(Math.random() * 8) + 1;
+                progress = Math.min(progress, 100);
+                
+                uploadProgress.style.width = progress + '%';
+                
+                // Upload updates at different stages
+                if (progress >= 25 && progress < 26) {
+                    addConsoleMessage('Upload in progress: 25% complete');
+                } else if (progress >= 50 && progress < 51) {
+                    addConsoleMessage('Upload in progress: 50% complete');
+                } else if (progress >= 75 && progress < 76) {
+                    addConsoleMessage('Upload in progress: 75% complete');
+                }
+                
+                if (progress >= 100) {
+                    clearInterval(uploadInterval);
+                    completeUpload();
+                }
+            }, 200);
+        }
+    }
+    
+    function completeUpload() {
+        // Update upload state
+        payloadUploaded = true;
+        
+        // Update status
+        uploadStatus.textContent = 'Uploaded';
+        
+        // Enable standby and execute controls
+        standbySwitch.disabled = false;
+        executePayloadBtn.disabled = false;
+        
+        addConsoleMessage('Payload upload completed successfully.');
+        addConsoleMessage('Ready to execute payload or place in standby mode.');
+        
+        addLogEntry('Payload upload completed successfully');
+    }
+    
+    function toggleStandby() {
+        inStandbyMode = standbySwitch.checked;
+        
+        if (inStandbyMode) {
+            addConsoleMessage('Payload set to standby mode. Will not execute immediately upon command.');
+            addLogEntry('Payload set to standby mode');
+        } else {
+            addConsoleMessage('Standby mode disabled. Payload will execute immediately upon command.');
+            addLogEntry('Payload standby mode disabled');
+        }
+    }
+    
+    function executePayload() {
+        if (!payloadExecuted) {
+            const targetId = targetSelect.value;
+            const payloadId = payloadSelect.value;
+            
+            // Disable execute button
+            executePayloadBtn.disabled = true;
+            
+            if (inStandbyMode) {
+                // If in standby mode, just ready the payload
+                addConsoleMessage('Payload prepared and placed in standby mode.');
+                addConsoleMessage('Awaiting remote trigger for execution.');
+                addLogEntry('Payload placed in standby mode, awaiting trigger');
+                
+                // After a delay, simulate remote trigger
+                setTimeout(function() {
+                    addConsoleMessage('');
+                    addConsoleMessage('ALERT: Remote trigger received!');
+                    addConsoleMessage('Executing payload from standby mode...');
+                    addLogEntry('Remote trigger received, executing payload');
+                    
+                    // Continue with execution
+                    simulateExecution();
+                }, 8000);
+            } else {
+                // Immediate execution
+                addConsoleMessage('Executing payload on target system...');
+                addLogEntry('Payload execution initiated');
+                
+                // Simulate execution
+                simulateExecution();
+            }
+        }
+    }
+    
+    function simulateExecution() {
+        const payloadType = payloadSelect.options[payloadSelect.selectedIndex].text;
+        
+        // Execution messages based on payload type
+        setTimeout(function() {
+            if (payloadType === 'Remote Backdoor') {
+                addConsoleMessage('Establishing persistent access to target system...');
+                addLogEntry('Backdoor installation in progress');
+            } else if (payloadType === 'Keylogger') {
+                addConsoleMessage('Installing keylogging service to target system...');
+                addLogEntry('Keylogger deployment in progress');
+            } else if (payloadType === 'Ransomware Simulator') {
+                addConsoleMessage('Preparing encryption module...');
+                addLogEntry('Ransomware simulation initiating');
+            }
+        }, 1000);
+        
+        setTimeout(function() {
+            if (payloadType === 'Remote Backdoor') {
+                addConsoleMessage('Creating hidden service for remote access...');
+            } else if (payloadType === 'Keylogger') {
+                addConsoleMessage('Setting up data exfiltration channel...');
+            } else if (payloadType === 'Ransomware Simulator') {
+                addConsoleMessage('Scanning for target files (simulation only)...');
+            }
+        }, 2500);
+        
+        setTimeout(function() {
+            if (payloadType === 'Remote Backdoor') {
+                addConsoleMessage('Configuring startup persistence...');
+            } else if (payloadType === 'Keylogger') {
+                addConsoleMessage('Installing keyboard hooks...');
+            } else if (payloadType === 'Ransomware Simulator') {
+                addConsoleMessage('Simulating file encryption (no actual files affected)...');
+            }
+        }, 4000);
+        
+        // Complete execution after delay
+        setTimeout(function() {
+            completeExecution();
+        }, 6000);
+    }
+    
+    function completeExecution() {
+        // Update execution state
+        payloadExecuted = true;
+        
+        const payloadType = payloadSelect.options[payloadSelect.selectedIndex].text;
+        
+        // Success message based on payload type
+        if (payloadType === 'Remote Backdoor') {
+            addConsoleMessage('BACKDOOR INSTALLED SUCCESSFULLY');
+            addConsoleMessage('Remote access established to target system.');
+            addLogEntry('Backdoor successfully installed on target system');
+        } else if (payloadType === 'Keylogger') {
+            addConsoleMessage('KEYLOGGER DEPLOYED SUCCESSFULLY');
+            addConsoleMessage('Now capturing keyboard input from target system.');
+            addLogEntry('Keylogger successfully deployed on target system');
+        } else if (payloadType === 'Ransomware Simulator') {
+            addConsoleMessage('RANSOMWARE SIMULATION COMPLETED');
+            addConsoleMessage('Simulation of encryption process completed.');
+            addLogEntry('Ransomware simulation successfully completed');
+        }
+        
+        // Show mission complete after a delay
+        setTimeout(function() {
+            showMissionComplete();
+        }, 2000);
+    }
+    
+    function showMissionComplete() {
+        // Update mission modal with current information
+        missionTarget.textContent = targetSelect.options[targetSelect.selectedIndex].text;
+        missionPayload.textContent = payloadSelect.options[payloadSelect.selectedIndex].text;
+        
+        // Random detection based on payload type
+        const payloadType = payloadSelect.value;
+        if (payloadType === 'backdoor') {
+            missionDetection.textContent = 'None Detected';
+            missionDetection.className = 'text-success';
+        } else if (payloadType === 'keylogger') {
+            const detected = Math.random() < 0.3;
+            if (detected) {
+                missionDetection.textContent = 'Partial Detection';
+                missionDetection.className = 'text-warning';
+            } else {
+                missionDetection.textContent = 'None Detected';
+                missionDetection.className = 'text-success';
+            }
+        } else if (payloadType === 'ransomware') {
+            missionDetection.textContent = 'Detected!';
+            missionDetection.className = 'text-danger';
+        }
+        
+        // Random mission time
+        const minutes = Math.floor(Math.random() * 5) + 1;
+        const seconds = Math.floor(Math.random() * 60);
+        missionTime.textContent = `00:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        
+        // Show the modal
+        missionCompleteModal.show();
+        
+        addLogEntry('Mission successfully completed');
+    }
+    
+    function resetMission() {
+        // Hide the modal
+        missionCompleteModal.hide();
+        
+        // Reset system for a new mission
+        rebootSystem();
+    }
+    
+    function updateSecurityLevel() {
+        const level = securityLevelSlider.value;
+        
+        // Update displayed value
+        switch (level) {
+            case '1':
+                securityLevelValue.textContent = 'Very Low';
+                break;
+            case '2':
+                securityLevelValue.textContent = 'Low';
+                break;
+            case '3':
+                securityLevelValue.textContent = 'Medium';
+                break;
+            case '4':
+                securityLevelValue.textContent = 'High';
+                break;
+            case '5':
+                securityLevelValue.textContent = 'Maximum';
+                break;
+        }
+        
+        addConsoleMessage(`Security level set to: ${securityLevelValue.textContent}`);
+        addLogEntry(`Security level changed to ${securityLevelValue.textContent}`);
+    }
+    
+    function toggleNetworkService(service, statusElement, isEnabled) {
+        if (isEnabled) {
+            statusElement.textContent = 'Connecting...';
+            statusElement.className = 'ms-auto badge bg-warning';
+            
+            addConsoleMessage(`Activating ${service.toUpperCase()} service...`);
+            
+            // Simulate connection delay
+            setTimeout(function() {
+                statusElement.textContent = 'Online';
+                statusElement.className = 'ms-auto badge bg-success';
+                
+                addConsoleMessage(`${service.toUpperCase()} service activated successfully.`);
+                addLogEntry(`${service.toUpperCase()} service activated`);
+            }, 1500);
+        } else {
+            statusElement.textContent = 'Offline';
+            statusElement.className = 'ms-auto badge bg-secondary';
+            
+            addConsoleMessage(`${service.toUpperCase()} service deactivated.`);
+            addLogEntry(`${service.toUpperCase()} service deactivated`);
+        }
+    }
+    
+    function addConsoleMessage(message) {
+        const messageElement = document.createElement('div');
+        messageElement.className = 'console-line';
+        messageElement.textContent = message;
+        consoleContent.appendChild(messageElement);
+        
+        // Scroll to bottom
+        consoleContent.scrollTop = consoleContent.scrollHeight;
+    }
+    
+    function addLogEntry(message) {
+        const now = new Date();
+        const timeString = now.toTimeString().split(' ')[0];
+        
+        const logEntry = document.createElement('div');
+        logEntry.className = 'log-entry';
+        
+        const timeElement = document.createElement('span');
+        timeElement.className = 'log-time';
+        timeElement.textContent = timeString;
+        
+        const messageElement = document.createElement('span');
+        messageElement.className = 'log-message';
+        messageElement.textContent = message;
+        
+        logEntry.appendChild(timeElement);
+        logEntry.appendChild(messageElement);
+        
+        systemLogs.appendChild(logEntry);
+        
+        // Increment counter
+        logCount++;
+        logEntryCount.textContent = `${logCount} entries`;
+        
+        // Scroll to bottom
+        systemLogs.scrollTop = systemLogs.scrollHeight;
+    }
+    
+    function clearConsole() {
+        consoleContent.innerHTML = '';
+        addConsoleMessage('Console cleared.');
+    }
+    
+    function executeCommand() {
+        processConsoleInput();
+    }
+    
+    function processConsoleInput() {
+        const command = consoleInput.value.trim();
+        
+        if (command) {
+            // Add command to console with prompt
+            addConsoleMessage(`${document.getElementById('consolePrompt').textContent} ${command}`);
+            
+            // Process command
+            processCommand(command);
+            
+            // Clear input
+            consoleInput.value = '';
+        }
+    }
+    
+    function processCommand(command) {
+        const cmdLower = command.toLowerCase();
+        
+        // Command processing
+        if (cmdLower === 'help') {
+            addConsoleMessage('Available commands:');
+            addConsoleMessage('  help             - Show this help message');
+            addConsoleMessage('  clear            - Clear the console');
+            addConsoleMessage('  status           - Show system status');
+            addConsoleMessage('  scan [target]    - Scan a target system');
+            addConsoleMessage('  connect [target] - Connect to a target system');
+            addConsoleMessage('  disconnect       - Disconnect from current target');
+            addConsoleMessage('  upload [file]    - Upload a file to target');
+            addConsoleMessage('  execute [file]   - Execute a file on target');
+            addConsoleMessage('  exit             - Shut down the system');
+        } else if (cmdLower === 'clear') {
+            clearConsole();
+        } else if (cmdLower === 'status') {
+            showSystemStatus();
+        } else if (cmdLower.startsWith('scan')) {
+            simulateScan(command.split(' ')[1] || 'current-target');
+        } else if (cmdLower.startsWith('connect')) {
+            simulateConnect(command.split(' ')[1] || 'default-target');
+        } else if (cmdLower === 'disconnect') {
+            if (connectionEstablished) {
+                establishConnection(); // This will disconnect
+            } else {
+                addConsoleMessage('Error: No active connection to disconnect.');
+            }
+        } else if (cmdLower.startsWith('upload')) {
+            simulateFileOperation('upload', command.split(' ')[1] || 'unknown');
+        } else if (cmdLower.startsWith('execute')) {
+            simulateFileOperation('execute', command.split(' ')[1] || 'unknown');
+        } else if (cmdLower === 'exit') {
+            if (systemPowered) {
+                shutdownSystem();
+            }
+        } else {
+            addConsoleMessage(`Error: Unknown command '${command}'`);
+            addConsoleMessage("Type 'help' for a list of available commands.");
+        }
+    }
+    
+    function showSystemStatus() {
+        addConsoleMessage('SYSTEM STATUS:');
+        addConsoleMessage(`Power state: ${systemPowered ? 'ONLINE' : 'STANDBY'}`);
+        addConsoleMessage(`Security level: ${securityLevelValue.textContent}`);
+        addConsoleMessage(`Connection: ${connectionEstablished ? 'ESTABLISHED' : 'DISCONNECTED'}`);
+        if (connectionEstablished) {
+            addConsoleMessage(`- Signal strength: ${signalStrength.textContent}`);
+            addConsoleMessage(`- Encryption: ${encryptionStatus.textContent}`);
+        }
+        addConsoleMessage(`Network services:`);
+        addConsoleMessage(`- VPN: ${vpnStatus.textContent}`);
+        addConsoleMessage(`- Proxy: ${proxyStatus.textContent}`);
+        addConsoleMessage(`- TOR: ${torStatus.textContent}`);
+        if (targetSelected) {
+            addConsoleMessage('Target system:');
+            addConsoleMessage(`- ${targetSelect.options[targetSelect.selectedIndex].text} (${targetIp.textContent})`);
+            addConsoleMessage(`- OS: ${targetOs.textContent}`);
+            addConsoleMessage(`- Security: ${targetSecurity.textContent}`);
+        }
+        if (payloadSelected) {
+            addConsoleMessage('Payload:');
+            addConsoleMessage(`- ${payloadSelect.options[payloadSelect.selectedIndex].text}`);
+            addConsoleMessage(`- Size: ${payloadSize.textContent}`);
+            addConsoleMessage(`- Detection risk: ${payloadDetection.textContent}`);
+            addConsoleMessage(`- Upload status: ${uploadStatus.textContent}`);
+            addConsoleMessage(`- Standby mode: ${standbySwitch.checked ? 'ENABLED' : 'DISABLED'}`);
+        }
+    }
+    
+    function simulateScan(target) {
+        if (!connectionEstablished) {
+            addConsoleMessage('Error: No active connection. Establish connection first.');
+            return;
+        }
+        
+        addConsoleMessage(`Scanning target: ${target}...`);
+        addLogEntry(`Port scan initiated on ${target}`);
+        
+        // Simulate scan delay
+        setTimeout(function() {
+            addConsoleMessage('SCAN RESULTS:');
+            
+            // Generate random open ports
+            const openPorts = [];
+            const numPorts = Math.floor(Math.random() * 5) + 1;
+            const commonPorts = [21, 22, 23, 25, 53, 80, 443, 3306, 3389, 8080];
+            
+            for (let i = 0; i < numPorts; i++) {
+                const portIndex = Math.floor(Math.random() * commonPorts.length);
+                const port = commonPorts[portIndex];
+                
+                if (!openPorts.includes(port)) {
+                    openPorts.push(port);
+                }
+            }
+            
+            // Sort ports
+            openPorts.sort((a, b) => a - b);
+            
+            // Display ports
+            for (const port of openPorts) {
+                let service = 'Unknown';
+                
+                switch(port) {
+                    case 21: service = 'FTP'; break;
+                    case 22: service = 'SSH'; break;
+                    case 23: service = 'Telnet'; break;
+                    case 25: service = 'SMTP'; break;
+                    case 53: service = 'DNS'; break;
+                    case 80: service = 'HTTP'; break;
+                    case 443: service = 'HTTPS'; break;
+                    case 3306: service = 'MySQL'; break;
+                    case 3389: service = 'RDP'; break;
+                    case 8080: service = 'HTTP-Alt'; break;
+                }
+                
+                addConsoleMessage(`Port ${port}: ${service} (OPEN)`);
+            }
+            
+            if (openPorts.length === 0) {
+                addConsoleMessage('No open ports found.');
+            }
+            
+            addLogEntry(`Scan completed: ${openPorts.length} open ports found`);
+        }, 2000);
+    }
+    
+    function simulateConnect(target) {
+        addConsoleMessage(`Connecting to ${target}...`);
+        
+        // If already connected, first disconnect
+        if (connectionEstablished) {
+            addConsoleMessage('Warning: Disconnecting from current target first.');
+            establishConnection();
+        }
+        
+        // Simulate connection
+        setTimeout(function() {
+            if (Math.random() < 0.8) {
+                addConsoleMessage(`Successfully connected to ${target}.`);
+                addLogEntry(`Manual connection to ${target} established`);
+                
+                // Actually establish connection
+                if (!connectionEstablished) {
+                    establishConnection();
+                }
+            } else {
+                addConsoleMessage(`Connection failed. Target ${target} is unreachable.`);
+                addLogEntry(`Connection to ${target} failed`);
+            }
+        }, 1500);
+    }
+    
+    function simulateFileOperation(operation, file) {
+        if (!connectionEstablished) {
+            addConsoleMessage(`Error: Cannot ${operation} file. No active connection.`);
+            return;
+        }
+        
+        if (operation === 'upload') {
+            addConsoleMessage(`Uploading file: ${file}...`);
+            addLogEntry(`Manual file upload: ${file}`);
+            
+            // Simulate upload
+            setTimeout(function() {
+                addConsoleMessage(`File ${file} uploaded successfully.`);
+            }, 1500);
+        } else if (operation === 'execute') {
+            addConsoleMessage(`Executing file: ${file}...`);
+            addLogEntry(`Manual file execution: ${file}`);
+            
+            // Simulate execution
+            setTimeout(function() {
+                if (Math.random() < 0.8) {
+                    addConsoleMessage(`File ${file} executed successfully.`);
+                } else {
+                    addConsoleMessage(`Error executing file ${file}: Access denied.`);
+                }
+            }, 1500);
+        }
+    }
+    
+    function updateSystemTime() {
+        const now = new Date();
+        
+        // Format time: HH:MM:SS
+        const hours = now.getHours().toString().padStart(2, '0');
+        const minutes = now.getMinutes().toString().padStart(2, '0');
+        const seconds = now.getSeconds().toString().padStart(2, '0');
+        
+        // Format date: DD-MM-YYYY
+        const day = now.getDate().toString().padStart(2, '0');
+        const month = (now.getMonth() + 1).toString().padStart(2, '0');
+        const year = now.getFullYear();
+        
+        systemTime.textContent = `${hours}:${minutes}:${seconds}`;
+        systemDate.textContent = `${day}-${month}-${year}`;
+    }
+});
+</script>
+<style>
+/* Mission Control Specific Styles */
+.mission-control-container {
+    margin-bottom: 20px;
+}
+
+.system-time {
+    font-family: var(--mono-font);
+    color: var(--hacker-primary);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    font-size: 0.85rem;
+}
+
+.system-date {
+    font-size: 0.7rem;
+    color: #888;
+}
+
+/* System Controls */
+.system-controls {
+    display: flex;
+    flex-direction: column;
+}
+
+.control-section {
+    border-bottom: 1px solid #333;
+}
+
+.control-section:last-child {
+    border-bottom: none;
+}
+
+.control-section-header {
+    background-color: #0a0a0a;
+    color: var(--hacker-primary);
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.control-section-body {
+    padding: 0.75rem 1rem;
+}
+
+.control-buttons {
+    display: flex;
+    justify-content: space-between;
+}
+
+.security-level-label {
+    font-size: 0.75rem;
+    color: #888;
+}
+
+.connection-status {
+    font-size: 0.85rem;
+}
+
+/* Console Display */
+.console-display {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.console-header {
+    background-color: #0a0a0a;
+    color: #888;
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+    font-family: var(--mono-font);
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #333;
+}
+
+.console-content {
+    flex: 1;
+    background-color: #0c0c0c;
+    font-family: var(--mono-font);
+    color: #ccc;
+    padding: 0.5rem 1rem;
+    overflow-y: auto;
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+
+.console-line {
+    padding: 0.1rem 0;
+}
+
+.console-input-line {
+    background-color: #0a0a0a;
+    padding: 0.5rem 1rem;
+    display: flex;
+    align-items: center;
+    border-top: 1px solid #333;
+}
+
+.console-prompt {
+    color: var(--hacker-primary);
+    margin-right: 0.5rem;
+    font-weight: bold;
+}
+
+.console-input {
+    background-color: transparent;
+    border: none;
+    color: #fff;
+    font-family: var(--mono-font);
+    flex: 1;
+    outline: none;
+}
+
+/* Target Info */
+.target-info, .payload-info {
+    font-size: 0.85rem;
+    margin-bottom: 1rem;
+}
+
+/* System Logs */
+.log-container {
+    height: 200px;
+    background-color: #0c0c0c;
+    border-radius: 0 0 0.25rem 0.25rem;
+    overflow: hidden;
+}
+
+.log-content {
+    height: 100%;
+    padding: 0.5rem;
+    overflow-y: auto;
+    font-family: var(--mono-font);
+    font-size: 0.8rem;
+    color: #ccc;
+}
+
+.log-entry {
+    display: flex;
+    margin-bottom: 0.25rem;
+    padding: 0.1rem 0;
+}
+
+.log-time {
+    margin-right: 0.75rem;
+    color: var(--hacker-primary);
+    opacity: 0.8;
+}
+
+/* Mission Complete Styling */
+.mission-result {
+    padding: 1.5rem 0;
+}
+
+.mission-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.mission-details {
+    padding: 1rem;
+    background-color: #121212;
+    border-radius: 0.25rem;
+    margin-bottom: 1rem;
+}
+
+/* Animation for console text */
+@keyframes typing {
+    from { width: 0 }
+    to { width: 100% }
+}
+
+.typing-effect {
+    overflow: hidden;
+    white-space: nowrap;
+    border-right: 3px solid var(--hacker-primary);
+    animation: typing 2s steps(40, end), cursor 0.75s step-end infinite;
+}
+
+@keyframes cursor {
+    from, to { border-color: transparent }
+    50% { border-color: var(--hacker-primary) }
+}
+</style>
+{% endblock %}

@@ -303,6 +303,15 @@ def malware_simulator():
     
     return render_template('malware_simulator.html', form=form, result=result)
 
+@app.route('/mission-control')
+@login_required
+def mission_control():
+    """
+    Advanced hacking simulator with manual controls and standby functionality.
+    This is a game-like interface for educational purposes.
+    """
+    return render_template('mission_control.html')
+
 # Simulation functions for educational purposes only
 
 def simulate_brute_force(target_type, target_value, charset, min_length, max_length):
