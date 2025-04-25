@@ -1,63 +1,249 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card border-success">
-            <div class="card-header bg-success text-white">
-                <h3 class="mb-0 text-center">
-                    <i class="fas fa-user-plus me-2"></i>Register
-                </h3>
-            </div>
-            <div class="card-body">
-                <form method="POST" action="{{ url_for('register') }}">
-                    {{ form.hidden_tag() }}
-                    
-                    <div class="mb-3">
-                        <label for="username" class="form-label">{{ form.username.label }}</label>
-                        {{ form.username(class="form-control", placeholder="Choose a username") }}
-                        {% if form.username.errors %}
-                            <div class="text-danger">
-                                {% for error in form.username.errors %}
-                                    <small>{{ error }}</small>
-                                {% endfor %}
+<!-- Matrix Canvas Background -->
+<canvas id="matrixCanvas" class="matrix-background"></canvas>
+
+<div class="login-container">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5 col-xl-4">
+            <div class="card login-card border-dark hacker-card" style="display: none;">
+                <div class="card-header bg-dark text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h3 class="mb-0">
+                            <i class="fas fa-user-plus me-2"></i>Nutzerregistrierung
+                        </h3>
+                        <div class="status-indicator status-secure"></div>
+                    </div>
+                </div>
+                
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <div class="system-status">
+                            <div class="d-flex justify-content-center">
+                                <div class="status-text">Neue Berechtigungen einrichten</div>
                             </div>
-                        {% endif %}
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="password" class="form-label">{{ form.password.label }}</label>
-                        {{ form.password(class="form-control", placeholder="Choose a password") }}
-                        {% if form.password.errors %}
-                            <div class="text-danger">
-                                {% for error in form.password.errors %}
-                                    <small>{{ error }}</small>
-                                {% endfor %}
+                            <div class="system-status-bar mb-2">
+                                <div class="status-bar-segment"></div>
+                                <div class="status-bar-segment"></div>
+                                <div class="status-bar-segment"></div>
+                                <div class="status-bar-segment"></div>
+                                <div class="status-bar-segment"></div>
+                                <div class="status-bar-segment"></div>
                             </div>
-                        {% endif %}
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="confirm_password" class="form-label">{{ form.confirm_password.label }}</label>
-                        {{ form.confirm_password(class="form-control", placeholder="Confirm your password") }}
-                        {% if form.confirm_password.errors %}
-                            <div class="text-danger">
-                                {% for error in form.confirm_password.errors %}
-                                    <small>{{ error }}</small>
-                                {% endfor %}
+                            <div class="login-prompt text-success">
+                                CRYPTO-GESICHERTE VERBINDUNG
                             </div>
-                        {% endif %}
+                        </div>
                     </div>
                     
-                    <div class="d-grid">
-                        {{ form.submit(class="btn btn-success") }}
+                    <form method="POST" action="{{ url_for('register') }}" class="login-form">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="mb-3">
+                            <div class="input-group">
+                                <span class="input-group-text bg-dark text-light border-dark">
+                                    <i class="fas fa-id-card"></i>
+                                </span>
+                                {{ form.username(class="form-control terminal-input", placeholder="Wählen Sie einen Nutzernamen") }}
+                            </div>
+                            {% if form.username.errors %}
+                                <div class="text-danger mt-1">
+                                    {% for error in form.username.errors %}
+                                        <small>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="input-group">
+                                <span class="input-group-text bg-dark text-light border-dark">
+                                    <i class="fas fa-lock"></i>
+                                </span>
+                                {{ form.password(class="form-control terminal-input", placeholder="Wählen Sie ein Passwort") }}
+                            </div>
+                            {% if form.password.errors %}
+                                <div class="text-danger mt-1">
+                                    {% for error in form.password.errors %}
+                                        <small>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="mt-1 password-strength">
+                                <div class="strength-bar">
+                                    <div class="strength-segment"></div>
+                                    <div class="strength-segment"></div>
+                                    <div class="strength-segment"></div>
+                                    <div class="strength-segment"></div>
+                                </div>
+                                <small class="text-muted strength-text">Passwortstärke</small>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <div class="input-group">
+                                <span class="input-group-text bg-dark text-light border-dark">
+                                    <i class="fas fa-shield-alt"></i>
+                                </span>
+                                {{ form.confirm_password(class="form-control terminal-input", placeholder="Passwort bestätigen") }}
+                            </div>
+                            {% if form.confirm_password.errors %}
+                                <div class="text-danger mt-1">
+                                    {% for error in form.confirm_password.errors %}
+                                        <small>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            {{ form.submit(class="btn btn-outline-success btn-lg auth-button", value="REGISTRIEREN") }}
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="card-footer bg-dark border-top border-dark">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">256-Bit Verschlüsselung</small>
+                        <a href="{{ url_for('login') }}" class="login-link">
+                            <i class="fas fa-sign-in-alt me-1"></i>Zum Login
+                        </a>
                     </div>
-                </form>
-            </div>
-            <div class="card-footer text-center">
-                <p class="mb-0">Already have an account? <a href="{{ url_for('login') }}">Login</a></p>
+                </div>
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/matrix.js') }}"></script>
+<script>
+// Password strength meter
+document.addEventListener('DOMContentLoaded', function() {
+    const passwordInput = document.querySelector('input[name="password"]');
+    const strengthSegments = document.querySelectorAll('.strength-segment');
+    const strengthText = document.querySelector('.strength-text');
+    
+    if (passwordInput) {
+        passwordInput.addEventListener('input', function() {
+            const password = this.value;
+            let strength = 0;
+            
+            // Length check
+            if(password.length > 6) strength += 1;
+            if(password.length > 10) strength += 1;
+            
+            // Complexity checks
+            if(/[A-Z]/.test(password) && /[a-z]/.test(password)) strength += 1;
+            if(/[0-9]/.test(password)) strength += 1;
+            if(/[^A-Za-z0-9]/.test(password)) strength += 1;
+            
+            // Cap at 4
+            strength = Math.min(strength, 4);
+            
+            // Update visual indicators
+            strengthSegments.forEach((segment, index) => {
+                if(index < strength) {
+                    segment.classList.add('active');
+                    
+                    // Color based on strength
+                    if(strength === 1) segment.style.backgroundColor = '#dc3545'; // Danger
+                    if(strength === 2) segment.style.backgroundColor = '#ffc107'; // Warning
+                    if(strength === 3) segment.style.backgroundColor = '#0dcaf0'; // Info
+                    if(strength === 4) segment.style.backgroundColor = '#198754'; // Success
+                } else {
+                    segment.classList.remove('active');
+                    segment.style.backgroundColor = '';
+                }
+            });
+            
+            // Update text
+            const strengthLabels = ['Schwach', 'Mäßig', 'Gut', 'Stark', 'Sehr stark'];
+            strengthText.textContent = password ? strengthLabels[strength] : 'Passwortstärke';
+        });
+    }
+});
+</script>
+<style>
+.matrix-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+
+.login-container {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-card {
+    backdrop-filter: blur(5px);
+    background-color: rgba(20, 20, 20, 0.8) !important;
+    box-shadow: 0 0 20px rgba(25, 135, 84, 0.3);
+}
+
+.login-prompt.text-success {
+    color: #198754 !important;
+}
+
+.auth-button {
+    font-family: var(--mono-font);
+    letter-spacing: 1px;
+    border-width: 2px;
+}
+
+.auth-button:hover {
+    background-color: rgba(25, 135, 84, 0.2);
+}
+
+.password-strength {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.strength-bar {
+    display: flex;
+    width: 100%;
+    gap: 5px;
+    margin-bottom: 5px;
+}
+
+.strength-segment {
+    height: 4px;
+    flex: 1;
+    background-color: #333;
+    transition: background-color 0.3s ease;
+}
+
+.strength-segment.active {
+    background-color: var(--hacker-primary);
+}
+
+.login-link {
+    color: #198754;
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: color 0.2s ease;
+}
+
+.login-link:hover {
+    color: #fff;
+}
+
+/* Override navbar for login page */
+.navbar {
+    background-color: transparent !important;
+    position: absolute;
+    width: 100%;
+    z-index: 100;
+}
+</style>
 {% endblock %}
