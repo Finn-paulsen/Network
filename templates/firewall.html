@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card border-danger mb-4">
+            <div class="card-header bg-danger text-white">
+                <h2 class="mb-0">
+                    <i class="fas fa-fire me-2"></i>Firewall-Regeln
+                </h2>
+            </div>
+            <div class="card-body">
+                {% if rules %}
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Quell-IP</th>
+                                <th>Ziel-IP</th>
+                                <th>Aktion</th>
+                                <th>Status</th>
+                                <th>Erstellt am</th>
+                                <th>Aktionen</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for rule in rules %}
+                            <tr>
+                                <td>{{ rule.id }}</td>
+                                <td>{{ rule.source_ip }}</td>
+                                <td>{{ rule.destination_ip }}</td>
+                                <td>
+                                    {% if rule.action == 'allow' %}
+                                    <span class="badge bg-success">Erlauben</span>
+                                    {% else %}
+                                    <span class="badge bg-danger">Verweigern</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if rule.status == 'active' %}
+                                    <span class="badge bg-success">Aktiv</span>
+                                    {% else %}
+                                    <span class="badge bg-secondary">Inaktiv</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ rule.created_at }}</td>
+                                <td>
+                                    <form action="{{ url_for('delete_rule', rule_id=rule.id) }}" method="POST" class="d-inline">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" 
+                                                onclick="return confirm('Sind Sie sicher, dass Sie diese Regel löschen möchten?');">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Keine Firewall-Regeln gefunden. Erstellen Sie eine neue Regel im Formular rechts.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card border-info">
+            <div class="card-header bg-info text-white">
+                <h4 class="mb-0">Firewall-Informationen</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">Was ist eine Firewall?</h5>
+                                <p class="card-text">
+                                    Eine Firewall ist ein Netzwerksicherheitssystem, das den eingehenden und ausgehenden 
+                                    Netzwerkverkehr auf der Grundlage einer Reihe von Sicherheitsregeln überwacht und kontrolliert.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">Hinweis</h5>
+                                <p class="card-text">
+                                    Diese Firewall-Bridge dient nur zu Bildungszwecken. In einer realen Umgebung würden diese 
+                                    Regeln mit iptables oder anderen Firewall-Systemen umgesetzt werden.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card border-success sticky-top" style="top: 10px;">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">Neue Regel erstellen</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('firewall') }}">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-3">
+                        <label for="source_ip" class="form-label">{{ form.source_ip.label }}</label>
+                        {{ form.source_ip(class="form-control", placeholder="z.B. 192.168.1.1 oder 192.168.1.*") }}
+                        {% if form.source_ip.errors %}
+                            <div class="text-danger">
+                                {% for error in form.source_ip.errors %}
+                                    <small>{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <small class="form-text text-muted">Verwenden Sie * als Platzhalter (z.B. 192.168.1.*)</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="destination_ip" class="form-label">{{ form.destination_ip.label }}</label>
+                        {{ form.destination_ip(class="form-control", placeholder="z.B. 10.0.0.1 oder 10.0.0.*") }}
+                        {% if form.destination_ip.errors %}
+                            <div class="text-danger">
+                                {% for error in form.destination_ip.errors %}
+                                    <small>{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="action" class="form-label">{{ form.action.label }}</label>
+                        <select name="action" id="action" class="form-select">
+                            <option value="allow">Erlauben</option>
+                            <option value="deny">Verweigern</option>
+                        </select>
+                        {% if form.action.errors %}
+                            <div class="text-danger">
+                                {% for error in form.action.errors %}
+                                    <small>{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="d-grid">
+                        {{ form.submit(class="btn btn-success") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card border-warning mt-4">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0">Tipps</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <i class="fas fa-shield-alt text-warning me-2"></i>
+                        Regeln werden in der angezeigten Reihenfolge verarbeitet.
+                    </li>
+                    <li class="list-group-item">
+                        <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                        Spezifischere Regeln sollten vor allgemeineren Regeln stehen.
+                    </li>
+                    <li class="list-group-item">
+                        <i class="fas fa-lightbulb text-warning me-2"></i>
+                        Verwenden Sie Platzhalter (*), um ganze Subnetze zu repräsentieren.
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/firewall.js') }}"></script>
+{% endblock %}

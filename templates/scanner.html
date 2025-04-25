@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card border-primary mb-4">
+            <div class="card-header bg-primary text-white">
+                <h2 class="mb-0">
+                    <i class="fas fa-search me-2"></i>Netzwerk-Scanner
+                </h2>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('scanner') }}">
+                    {{ form.hidden_tag() }}
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-9">
+                            <label for="target" class="form-label">{{ form.target.label }}</label>
+                            {{ form.target(class="form-control", placeholder="z.B. 192.168.1.1 oder 192.168.1.0/24") }}
+                            {% if form.target.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.target.errors %}
+                                        <small>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-3">
+                            {{ form.submit(class="btn btn-primary w-100") }}
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="scanResultsContainer" class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="mb-0">Scan-Ergebnisse</h3>
+            </div>
+            <div class="card-body">
+                {% if scan_results %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>IP-Adresse</th>
+                                <th>Hostname</th>
+                                <th>Status</th>
+                                <th>Aktionen</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for host in scan_results %}
+                            <tr class="host-row" data-ip="{{ host.ip }}">
+                                <td>{{ host.ip }}</td>
+                                <td>{{ host.hostname }}</td>
+                                <td>
+                                    {% if host.status == 'up' %}
+                                    <span class="badge bg-success">Online</span>
+                                    {% else %}
+                                    <span class="badge bg-danger">Offline</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-info view-details-btn" data-ip="{{ host.ip }}">
+                                        <i class="fas fa-info-circle"></i> Details
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-info mb-0">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Führen Sie einen Scan durch, um Ergebnisse zu sehen.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Host Details Modal -->
+<div class="modal fade" id="hostDetailsModal" tabindex="-1" aria-labelledby="hostDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title" id="hostDetailsModalLabel">Host Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center" id="loadingSpinner">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2">Lade Host-Details...</p>
+                </div>
+                
+                <div id="hostDetailsContent" style="display: none;">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="card border-info h-100">
+                                <div class="card-header bg-info text-white">
+                                    <h5 class="mb-0">Basisinformationen</h5>
+                                </div>
+                                <div class="card-body">
+                                    <table class="table">
+                                        <tr>
+                                            <th>IP-Adresse:</th>
+                                            <td id="detailIp"></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Hostname:</th>
+                                            <td id="detailHostname"></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Betriebssystem:</th>
+                                            <td id="detailOs"></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card border-success h-100">
+                                <div class="card-header bg-success text-white">
+                                    <h5 class="mb-0">Aktionen</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="d-grid gap-2">
+                                        <button class="btn btn-outline-primary action-ping">
+                                            <i class="fas fa-exchange-alt me-2"></i>Ping
+                                        </button>
+                                        <button class="btn btn-outline-info action-traceroute">
+                                            <i class="fas fa-route me-2"></i>Traceroute
+                                        </button>
+                                        <button class="btn btn-outline-warning action-add-firewall">
+                                            <i class="fas fa-shield-alt me-2"></i>Firewall-Regel erstellen
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card border-primary">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">Offene Ports</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped" id="portsTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Port</th>
+                                            <th>Service</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="detailPorts">
+                                        <!-- Port data will be inserted here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Schließen</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/scanner.js') }}"></script>
+{% endblock %}

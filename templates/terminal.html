@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card border-success mb-4">
+            <div class="card-header bg-success text-white">
+                <h2 class="mb-0">
+                    <i class="fas fa-terminal me-2"></i>Terminal
+                </h2>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Verfügbare Befehle:</strong> ping, traceroute, nslookup, dig, host, whois, ifconfig, ipconfig, netstat
+                </div>
+                
+                <div class="terminal-output mb-3" id="terminalOutput">
+                    {% if output %}
+                    <pre class="terminal-text">{{ output }}</pre>
+                    {% else %}
+                    <pre class="terminal-text">
+Netzwerksicherheits-Terminal v1.0
+Geben Sie einen Befehl ein...
+                    </pre>
+                    {% endif %}
+                </div>
+                
+                <form method="POST" action="{{ url_for('terminal') }}" id="terminalForm">
+                    {{ form.hidden_tag() }}
+                    <div class="input-group">
+                        <span class="input-group-text bg-dark">$</span>
+                        {{ form.command(class="form-control terminal-input", placeholder="Befehl eingeben...", autocomplete="off") }}
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-play me-1"></i>Ausführen
+                        </button>
+                    </div>
+                    {% if form.command.errors %}
+                        <div class="text-danger mt-1">
+                            {% for error in form.command.errors %}
+                                <small>{{ error }}</small>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card border-info">
+            <div class="card-header bg-info text-white">
+                <h4 class="mb-0">Terminal-Hilfe</h4>
+            </div>
+            <div class="card-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Befehl</th>
+                            <th>Beschreibung</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>ping &lt;host&gt;</code></td>
+                            <td>Sendet ICMP-Echo-Anforderungen an einen Host</td>
+                        </tr>
+                        <tr>
+                            <td><code>traceroute &lt;host&gt;</code></td>
+                            <td>Zeigt den Pfad an, den Pakete zu einem Netzwerkhost nehmen</td>
+                        </tr>
+                        <tr>
+                            <td><code>nslookup &lt;domain&gt;</code></td>
+                            <td>Fragt DNS-Server nach Domänen- oder IP-Adressen-Informationen ab</td>
+                        </tr>
+                        <tr>
+                            <td><code>netstat</code></td>
+                            <td>Zeigt Netzwerkverbindungen, Routing-Tabellen und Schnittstellenstatistiken an</td>
+                        </tr>
+                        <tr>
+                            <td><code>whois &lt;domain&gt;</code></td>
+                            <td>Sucht nach Registrierungsinformationen für eine Domain</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card border-warning">
+            <div class="card-header bg-warning text-dark">
+                <h4 class="mb-0">Beispiele</h4>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <h5>Ping-Beispiel</h5>
+                    <div class="bg-dark text-light p-2 rounded">
+                        <code>ping -c 4 google.com</code>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <h5>Traceroute-Beispiel</h5>
+                    <div class="bg-dark text-light p-2 rounded">
+                        <code>traceroute github.com</code>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <h5>Nslookup-Beispiel</h5>
+                    <div class="bg-dark text-light p-2 rounded">
+                        <code>nslookup example.com</code>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <h5>DNS-Abfrage</h5>
+                    <div class="bg-dark text-light p-2 rounded">
+                        <code>dig twitter.com</code>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/terminal.js') }}"></script>
+{% endblock %}

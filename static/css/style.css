@@ -1,0 +1,95 @@
+/* Custom styles for the network security platform */
+
+/* Terminal styling */
+.terminal-output {
+    background-color: #212529;
+    color: #f8f9fa;
+    border-radius: 0.25rem;
+    padding: 1rem;
+    font-family: 'Courier New', monospace;
+    height: 400px;
+    overflow-y: auto;
+    margin-bottom: 1rem;
+}
+
+.terminal-text {
+    margin: 0;
+    padding: 0;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.terminal-input {
+    font-family: 'Courier New', monospace;
+    background-color: #212529;
+    color: #f8f9fa;
+}
+
+/* Scanner styling */
+.host-row {
+    cursor: pointer;
+}
+
+.host-row:hover {
+    background-color: rgba(var(--bs-info-rgb), 0.1) !important;
+}
+
+/* IP address styling in various places */
+.ip-address {
+    font-family: 'Courier New', monospace;
+    font-weight: 600;
+}
+
+/* Custom badge styling */
+.badge.bg-allow {
+    background-color: var(--bs-success);
+}
+
+.badge.bg-deny {
+    background-color: var(--bs-danger);
+}
+
+/* Card hover effect for dashboard */
+.dashboard-card {
+    transition: transform 0.2s ease-in-out;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-5px);
+}
+
+/* Custom styling for tooltips */
+.custom-tooltip {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted #666;
+}
+
+.custom-tooltip .tooltip-text {
+    visibility: hidden;
+    width: 200px;
+    background-color: #212529;
+    color: #f8f9fa;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -100px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.custom-tooltip:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .terminal-output {
+        height: 300px;
+    }
+}
