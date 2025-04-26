@@ -1,248 +1,293 @@
-{% extends "base.html" %}
-
-{% block content %}
+{% extends "base.html" %} {% block content %}
 <div class="login-background">
-    <div class="security-overlay"></div>
-    <div class="grid-overlay"></div>
+  <div class="security-overlay"></div>
+  <div class="grid-overlay"></div>
 </div>
 
 <div class="login-container">
-    <div class="initial-loading" id="initialLoading">
-        <div class="security-box">
-            <div class="security-title">
-                <i class="fas fa-shield-alt me-2"></i> SICHERHEITSPROTOKOLL
-            </div>
-            <div class="loading-sequence">
-                <div class="sequence-line"><span class="sequence-status">></span> Initialisiere Sicherheitsprotokoll...</div>
-                <div class="sequence-line"><span class="sequence-status">></span> Verbinde mit dem Netzwerk...<span class="success-check">✓</span></div>
-                <div class="sequence-line"><span class="sequence-status">></span> Verschlüsseltes Protokoll aktiviert...<span class="success-check">✓</span></div>
-                <div class="sequence-line"><span class="sequence-status">></span> Bypass Firewall-Regeln...<span class="warning-alert">!</span></div>
-                <div class="sequence-line"><span class="sequence-status">></span> Gewähre Nutzerzugang...<span class="success-check">✓</span></div>
-            </div>
-            
-            <div class="progress mt-3">
-                <div id="securityProgress" class="progress-bar progress-bar-striped progress-bar-animated bg-danger" style="width: 0%"></div>
-            </div>
-            
-            <div class="security-message" id="securityMessage">Initialisiere Zugriffsversuch...</div>
+  <div class="initial-loading" id="initialLoading">
+    <div class="security-box">
+      <div class="security-title">
+        <i class="fas fa-shield-alt me-2"></i> SICHERHEITSPROTOKOLL
+      </div>
+      <div class="loading-sequence">
+        <div class="sequence-line">
+          <span class="sequence-status">></span> Initialisiere
+          Sicherheitsprotokoll...
         </div>
-    </div>
-    
-    <div class="row justify-content-center login-form-container" style="display: none;" id="loginFormContainer">
-        <div class="col-md-8 col-lg-6 col-xl-5">
-            <div class="card login-card border-danger">
-                <div class="card-header bg-dark text-white border-danger">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h3 class="mb-0">
-                            <i class="fas fa-terminal me-2"></i>System Zugriff
-                        </h3>
-                        <div class="d-flex align-items-center">
-                            <span class="fs-6 me-2">Status:</span>
-                            <div class="status-indicator status-danger blink-slow me-1"></div>
-                            <span class="fs-6 text-danger">UNSICHER</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="card-body">
-                    <div class="alert alert-danger authentication-alert">
-                        <div class="d-flex">
-                            <i class="fas fa-exclamation-triangle fs-4 me-2"></i>
-                            <div>
-                                <h5 class="alert-heading mb-1">WARNUNG: Unsichere Verbindung</h5>
-                                <p class="mb-0 small">Alle Aktivitäten werden aufgezeichnet und können von Systemadministratoren eingesehen werden.</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <form method="POST" action="{{ url_for('login') }}" class="login-form">
-                        {{ form.hidden_tag() }}
-                        
-                        <div class="system-info mb-4">
-                            <div class="system-header">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="system-name">CyberSec OS v5.4.2</span>
-                                    <span class="system-time" id="systemTime">00:00:00</span>
-                                </div>
-                                <div class="system-status-line"></div>
-                            </div>
-                            
-                            <div class="console-messages" id="consoleMessages">
-                                <div class="message-line">Authentifizierungsserver bereit...</div>
-                                <div class="message-line">Bitte geben Sie Ihre Anmeldedaten ein:</div>
-                            </div>
-                        </div>
-                        
-                        <div class="mb-4">
-                            <div class="input-group">
-                                <span class="input-group-text bg-dark text-light border-danger">
-                                    <i class="fas fa-user-shield"></i>
-                                </span>
-                                {{ form.username(class="form-control terminal-input border-danger", placeholder="Benutzername eingeben", autofocus=true) }}
-                            </div>
-                            {% if form.username.errors %}
-                                <div class="text-danger mt-1">
-                                    {% for error in form.username.errors %}
-                                        <small>{{ error }}</small>
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                        </div>
-                        
-                        <div class="mb-4">
-                            <div class="input-group">
-                                <span class="input-group-text bg-dark text-light border-danger">
-                                    <i class="fas fa-key"></i>
-                                </span>
-                                {{ form.password(class="form-control terminal-input border-danger", placeholder="Passwort eingeben") }}
-                            </div>
-                            {% if form.password.errors %}
-                                <div class="text-danger mt-1">
-                                    {% for error in form.password.errors %}
-                                        <small>{{ error }}</small>
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                        </div>
-                        
-                        <div class="security-stats mb-4">
-                            <div class="stats-row">
-                                <div>Einbruchsversuche:</div>
-                                <div class="text-danger">24</div>
-                            </div>
-                            <div class="stats-row">
-                                <div>Letzte Aktivität:</div>
-                                <div class="text-warning" id="lastActivity">Vor 3 Minuten</div>
-                            </div>
-                            <div class="stats-row">
-                                <div>Firewall Status:</div>
-                                <div class="text-danger">Teilweise umgangen</div>
-                            </div>
-                        </div>
-                        
-                        <div class="d-grid gap-2">
-                            {{ form.submit(class="btn btn-outline-danger btn-lg auth-button", value="EINLOGGEN", id="loginButton") }}
-                        </div>
-                    </form>
-                </div>
-                
-                <div class="card-footer bg-dark text-white border-danger">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <small class="text-danger"><i class="fas fa-lock-open me-1"></i>Unsichere Verbindung</small>
-                        <a href="{{ url_for('register') }}" class="register-link">
-                            <i class="fas fa-user-plus me-1"></i>Neuen Zugang erstellen
-                        </a>
-                    </div>
-                </div>
-            </div>
+        <div class="sequence-line">
+          <span class="sequence-status">></span> Verbinde mit dem
+          Netzwerk...<span class="success-check">✓</span>
         </div>
-    </div>
-</div>
-{% endblock %}
+        <div class="sequence-line">
+          <span class="sequence-status">></span> Verschlüsseltes Protokoll
+          aktiviert...<span class="success-check">✓</span>
+        </div>
+        <div class="sequence-line">
+          <span class="sequence-status">></span> Bypass Firewall-Regeln...<span
+            class="warning-alert"
+            >!</span
+          >
+        </div>
+        <div class="sequence-line">
+          <span class="sequence-status">></span> Gewähre Nutzerzugang...<span
+            class="success-check"
+            >✓</span
+          >
+        </div>
+      </div>
 
-{% block extra_js %}
+      <div class="progress mt-3">
+        <div
+          id="securityProgress"
+          class="progress-bar progress-bar-striped progress-bar-animated bg-danger"
+          style="width: 0%"
+        ></div>
+      </div>
+
+      <div class="security-message" id="securityMessage">
+        Initialisiere Zugriffsversuch...
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="row justify-content-center login-form-container"
+    style="display: none"
+    id="loginFormContainer"
+  >
+    <div class="col-md-8 col-lg-6 col-xl-5">
+      <div class="card login-card border-danger">
+        <div class="card-header bg-dark text-white border-danger">
+          <div class="d-flex justify-content-between align-items-center">
+            <h3 class="mb-0">
+              <i class="fas fa-terminal me-2"></i>System Zugriff
+            </h3>
+            <div class="d-flex align-items-center">
+              <span class="fs-6 me-2">Status:</span>
+              <div class="status-indicator status-danger blink-slow me-1"></div>
+              <span class="fs-6 text-danger">UNSICHER</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <div class="alert alert-danger authentication-alert">
+            <div class="d-flex">
+              <i class="fas fa-exclamation-triangle fs-4 me-2"></i>
+              <div>
+                <h5 class="alert-heading mb-1">
+                  WARNUNG: Unsichere Verbindung
+                </h5>
+                <p class="mb-0 small">
+                  Alle Aktivitäten werden aufgezeichnet und können von
+                  Systemadministratoren eingesehen werden.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <form
+            method="POST"
+            action="{{ url_for('login') }}"
+            class="login-form"
+          >
+            {{ form.hidden_tag() }}
+
+            <div class="system-info mb-4">
+              <div class="system-header">
+                <div class="d-flex justify-content-between align-items-center">
+                  <span class="system-name">CyberSec OS v5.4.2</span>
+                  <span class="system-time" id="systemTime">00:00:00</span>
+                </div>
+                <div class="system-status-line"></div>
+              </div>
+
+              <div class="console-messages" id="consoleMessages">
+                <div class="message-line">
+                  Authentifizierungsserver bereit...
+                </div>
+                <div class="message-line">
+                  Bitte geben Sie Ihre Anmeldedaten ein:
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <div class="input-group">
+                <span class="input-group-text bg-dark text-light border-danger">
+                  <i class="fas fa-user-shield"></i>
+                </span>
+                {{ form.username(class="form-control terminal-input
+                border-danger", placeholder="Benutzername eingeben",
+                autofocus=true) }}
+              </div>
+              {% if form.username.errors %}
+              <div class="text-danger mt-1">
+                {% for error in form.username.errors %}
+                <small>{{ error }}</small>
+                {% endfor %}
+              </div>
+              {% endif %}
+            </div>
+
+            <div class="mb-4">
+              <div class="input-group">
+                <span class="input-group-text bg-dark text-light border-danger">
+                  <i class="fas fa-key"></i>
+                </span>
+                {{ form.password(class="form-control terminal-input
+                border-danger", placeholder="Passwort eingeben") }}
+              </div>
+              {% if form.password.errors %}
+              <div class="text-danger mt-1">
+                {% for error in form.password.errors %}
+                <small>{{ error }}</small>
+                {% endfor %}
+              </div>
+              {% endif %}
+            </div>
+
+            <div class="security-stats mb-4">
+              <div class="stats-row">
+                <div>Einbruchsversuche:</div>
+                <div class="text-danger">24</div>
+              </div>
+              <div class="stats-row">
+                <div>Letzte Aktivität:</div>
+                <div class="text-warning" id="lastActivity">Vor 3 Minuten</div>
+              </div>
+              <div class="stats-row">
+                <div>Firewall Status:</div>
+                <div class="text-danger">Teilweise umgangen</div>
+              </div>
+            </div>
+
+            <div class="d-grid gap-2">
+              {{ form.submit(class="btn btn-outline-danger btn-lg auth-button",
+              value="EINLOGGEN", id="loginButton") }}
+            </div>
+          </form>
+        </div>
+
+        <div class="card-footer bg-dark text-white border-danger">
+          <div class="d-flex justify-content-between align-items-center">
+            <small class="text-danger"
+              ><i class="fas fa-lock-open me-1"></i>Unsichere Verbindung</small
+            >
+            <a href="{{ url_for('register') }}" class="register-link">
+              <i class="fas fa-user-plus me-1"></i>Neuen Zugang erstellen
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %} {% block extra_js %}
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener("DOMContentLoaded", function () {
     // Initial loading screen
-    const initialLoading = document.getElementById('initialLoading');
-    const loginFormContainer = document.getElementById('loginFormContainer');
-    const securityProgress = document.getElementById('securityProgress');
-    const securityMessage = document.getElementById('securityMessage');
-    
+    const initialLoading = document.getElementById("initialLoading");
+    const loginFormContainer = document.getElementById("loginFormContainer");
+    const securityProgress = document.getElementById("securityProgress");
+    const securityMessage = document.getElementById("securityMessage");
+
     // System time
-    const systemTimeElement = document.getElementById('systemTime');
-    const lastActivityElement = document.getElementById('lastActivity');
-    
+    const systemTimeElement = document.getElementById("systemTime");
+    const lastActivityElement = document.getElementById("lastActivity");
+
     // Update system time
     function updateSystemTime() {
-        const now = new Date();
-        const hours = now.getHours().toString().padStart(2, '0');
-        const minutes = now.getMinutes().toString().padStart(2, '0');
-        const seconds = now.getSeconds().toString().padStart(2, '0');
-        
-        if (systemTimeElement) {
-            systemTimeElement.textContent = `${hours}:${minutes}:${seconds}`;
-        }
+      const now = new Date();
+      const hours = now.getHours().toString().padStart(2, "0");
+      const minutes = now.getMinutes().toString().padStart(2, "0");
+      const seconds = now.getSeconds().toString().padStart(2, "0");
+
+      if (systemTimeElement) {
+        systemTimeElement.textContent = `${hours}:${minutes}:${seconds}`;
+      }
     }
-    
+
     // Set up the timer
     setInterval(updateSystemTime, 1000);
     updateSystemTime();
-    
+
     // Update last activity time randomly
     function updateLastActivity() {
-        if (lastActivityElement) {
-            const randomMinutes = Math.floor(Math.random() * 10) + 1;
-            lastActivityElement.textContent = `Vor ${randomMinutes} Minuten`;
-        }
+      if (lastActivityElement) {
+        const randomMinutes = Math.floor(Math.random() * 10) + 1;
+        lastActivityElement.textContent = `Vor ${randomMinutes} Minuten`;
+      }
     }
-    
+
     setInterval(updateLastActivity, 30000); // Update every 30 seconds
-    
+
     // Console messages
-    const consoleMessages = document.getElementById('consoleMessages');
-    
+    const consoleMessages = document.getElementById("consoleMessages");
+
     function addConsoleMessage(message, delay = 0) {
-        setTimeout(() => {
-            if (consoleMessages) {
-                const messageElement = document.createElement('div');
-                messageElement.className = 'message-line animate-in';
-                messageElement.textContent = message;
-                consoleMessages.appendChild(messageElement);
-                
-                // Auto scroll to bottom
-                consoleMessages.scrollTop = consoleMessages.scrollHeight;
-            }
-        }, delay);
+      setTimeout(() => {
+        if (consoleMessages) {
+          const messageElement = document.createElement("div");
+          messageElement.className = "message-line animate-in";
+          messageElement.textContent = message;
+          consoleMessages.appendChild(messageElement);
+
+          // Auto scroll to bottom
+          consoleMessages.scrollTop = consoleMessages.scrollHeight;
+        }
+      }, delay);
     }
-    
+
     // Login button click event
-    const loginButton = document.getElementById('loginButton');
+    const loginButton = document.getElementById("loginButton");
     if (loginButton) {
-        loginButton.addEventListener('click', function() {
-            addConsoleMessage('Überprüfe Anmeldedaten...');
-            addConsoleMessage('Bereite Authentifizierung vor...', 500);
-            addConsoleMessage('Verbinde mit dem Server...', 1000);
-        });
+      loginButton.addEventListener("click", function () {
+        addConsoleMessage("Überprüfe Anmeldedaten...");
+        addConsoleMessage("Bereite Authentifizierung vor...", 500);
+        addConsoleMessage("Verbinde mit dem Server...", 1000);
+      });
     }
-    
+
     // Security progress animation
     let progress = 0;
     const progressInterval = setInterval(() => {
-        progress += 2;
-        if (securityProgress) {
-            securityProgress.style.width = `${progress}%`;
-        }
-        
-        // Update security messages at certain points
-        if (progress === 20) {
-            securityMessage.textContent = 'Umgehe Sicherheitsprotokolle...';
-        } else if (progress === 40) {
-            securityMessage.textContent = 'Firewall-Regeln werden deaktiviert...';
-        } else if (progress === 60) {
-            securityMessage.textContent = 'Zugriff auf Terminal wird vorbereitet...';
-        } else if (progress === 80) {
-            securityMessage.textContent = 'Zugriffsrechte werden erteilt...';
-        } else if (progress >= 100) {
-            securityMessage.textContent = 'Zugriff gewährt!';
-            clearInterval(progressInterval);
-            
-            // Show the login form
-            setTimeout(() => {
-                initialLoading.style.display = 'none';
-                loginFormContainer.style.display = 'flex';
-                
-                // Add initial console messages
-                addConsoleMessage('Authentifizierungsserver bereit...', 500);
-                addConsoleMessage('Bitte geben Sie Ihre Anmeldedaten ein:', 1000);
-            }, 1000);
-        }
+      progress += 2;
+      if (securityProgress) {
+        securityProgress.style.width = `${progress}%`;
+      }
+
+      // Update security messages at certain points
+      if (progress === 20) {
+        securityMessage.textContent = "Umgehe Sicherheitsprotokolle...";
+      } else if (progress === 40) {
+        securityMessage.textContent = "Firewall-Regeln werden deaktiviert...";
+      } else if (progress === 60) {
+        securityMessage.textContent =
+          "Zugriff auf Terminal wird vorbereitet...";
+      } else if (progress === 80) {
+        securityMessage.textContent = "Zugriffsrechte werden erteilt...";
+      } else if (progress >= 100) {
+        securityMessage.textContent = "Zugriff gewährt!";
+        clearInterval(progressInterval);
+
+        // Show the login form
+        setTimeout(() => {
+          initialLoading.style.display = "none";
+          loginFormContainer.style.display = "flex";
+
+          // Add initial console messages
+          addConsoleMessage("Authentifizierungsserver bereit...", 500);
+          addConsoleMessage("Bitte geben Sie Ihre Anmeldedaten ein:", 1000);
+        }, 1000);
+      }
     }, 80);
-});
+  });
 </script>
 <style>
-/* Background styles */
-.login-background {
+  /* Background styles */
+  .login-background {
     position: fixed;
     top: 0;
     left: 0;
@@ -250,56 +295,59 @@ document.addEventListener('DOMContentLoaded', function() {
     height: 100%;
     background-color: #050505;
     z-index: -2;
-}
+  }
 
-.security-overlay {
+  .security-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-image: radial-gradient(circle at center, rgba(255, 0, 0, 0.1) 0%, rgba(20, 20, 20, 0) 70%);
+    background-image: radial-gradient(
+      circle at center,
+      rgba(255, 0, 0, 0.1) 0%,
+      rgba(20, 20, 20, 0) 70%
+    );
     z-index: -1;
-}
+  }
 
-.grid-overlay {
+  .grid-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-image: 
-        linear-gradient(rgba(80, 0, 0, 0.1) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(80, 0, 0, 0.1) 1px, transparent 1px);
+    background-image: linear-gradient(rgba(80, 0, 0, 0.1) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(80, 0, 0, 0.1) 1px, transparent 1px);
     background-size: 20px 20px;
     z-index: -1;
-}
+  }
 
-.login-container {
+  .login-container {
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 2rem 0;
-}
+  }
 
-/* Initial Loading Screen */
-.initial-loading {
+  /* Initial Loading Screen */
+  .initial-loading {
     width: 100%;
     max-width: 600px;
     margin: 0 auto;
-}
+  }
 
-.security-box {
+  .security-box {
     background-color: rgba(0, 0, 0, 0.8);
     border: 1px solid #dc3545;
     border-radius: 5px;
     padding: 1.5rem;
     color: #f8f9fa;
     box-shadow: 0 0 20px rgba(220, 53, 69, 0.5);
-}
+  }
 
-.security-title {
+  .security-title {
     font-family: var(--mono-font);
     color: #dc3545;
     font-size: 1.2rem;
@@ -307,167 +355,173 @@ document.addEventListener('DOMContentLoaded', function() {
     margin-bottom: 1rem;
     text-align: center;
     letter-spacing: 1px;
-}
+  }
 
-.loading-sequence {
+  .loading-sequence {
     font-family: var(--mono-font);
     margin-bottom: 1rem;
-}
+  }
 
-.sequence-line {
+  .sequence-line {
     margin-bottom: 0.5rem;
     color: #adb5bd;
-}
+  }
 
-.sequence-status {
+  .sequence-status {
     color: #dc3545;
     margin-right: 0.5rem;
-}
+  }
 
-.success-check {
+  .success-check {
     color: #198754;
     margin-left: 0.5rem;
-}
+  }
 
-.warning-alert {
+  .warning-alert {
     color: #ffc107;
     margin-left: 0.5rem;
-}
+  }
 
-.security-message {
+  .security-message {
     text-align: center;
     font-family: var(--mono-font);
     color: #dc3545;
     margin-top: 0.5rem;
     font-size: 0.9rem;
-}
+  }
 
-/* Login Form */
-.login-form-container {
+  /* Login Form */
+  .login-form-container {
     width: 100%;
-}
+  }
 
-.login-card {
+  .login-card {
     background-color: rgba(10, 10, 10, 0.9) !important;
     box-shadow: 0 0 30px rgba(220, 53, 69, 0.3);
-}
+  }
 
-.authentication-alert {
+  .authentication-alert {
     background-color: rgba(220, 53, 69, 0.15);
     border-color: rgba(220, 53, 69, 0.3);
     color: #e2e3e5;
-}
+  }
 
-.system-info {
+  .system-info {
     background-color: #0c0c0c;
     border: 1px solid #dc3545;
     border-radius: 4px;
     overflow: hidden;
-}
+  }
 
-.system-header {
+  .system-header {
     padding: 0.5rem;
     background-color: #141414;
     border-bottom: 1px solid #dc3545;
-}
+  }
 
-.system-name {
+  .system-name {
     color: #dc3545;
     font-family: var(--mono-font);
     font-size: 0.85rem;
-}
+  }
 
-.system-time {
+  .system-time {
     color: #dc3545;
     font-family: var(--mono-font);
     font-size: 0.85rem;
-}
+  }
 
-.system-status-line {
+  .system-status-line {
     height: 2px;
     background: linear-gradient(to right, #dc3545, transparent);
     margin-top: 0.5rem;
-}
+  }
 
-.console-messages {
+  .console-messages {
     padding: 0.5rem;
     height: 80px;
     overflow-y: auto;
     font-family: var(--mono-font);
     font-size: 0.8rem;
     color: #adb5bd;
-}
+  }
 
-.message-line {
+  .message-line {
     margin-bottom: 0.2rem;
-}
+  }
 
-.terminal-input {
+  .terminal-input {
     background-color: #121212 !important;
     color: #dc3545 !important;
     font-family: var(--mono-font);
-}
+  }
 
-.terminal-input:focus {
+  .terminal-input:focus {
     box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
-}
+  }
 
-.auth-button {
+  .auth-button {
     font-family: var(--mono-font);
     letter-spacing: 1px;
     border-width: 2px;
-}
+  }
 
-.auth-button:hover {
+  .auth-button:hover {
     background-color: rgba(220, 53, 69, 0.2);
-}
+  }
 
-.security-stats {
+  .security-stats {
     background-color: #0c0c0c;
     border: 1px solid #333;
     border-radius: 4px;
     padding: 0.5rem;
     font-family: var(--mono-font);
     font-size: 0.8rem;
-}
+  }
 
-.stats-row {
+  .stats-row {
     display: flex;
     justify-content: space-between;
     margin-bottom: 0.3rem;
-}
+  }
 
-.stats-row:last-child {
+  .stats-row:last-child {
     margin-bottom: 0;
-}
+  }
 
-.register-link {
+  .register-link {
     color: #dc3545;
     text-decoration: none;
     font-size: 0.85rem;
     transition: color 0.2s ease;
-}
+  }
 
-.register-link:hover {
+  .register-link:hover {
     color: #fff;
-}
+  }
 
-/* Override navbar for login page */
-.navbar {
+  /* Override navbar for login page */
+  .navbar {
     background-color: transparent !important;
     position: absolute;
     width: 100%;
     z-index: 100;
-}
+  }
 
-/* Animation for console messages */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(5px); }
-    to { opacity: 1; transform: translateY(0); }
-}
+  /* Animation for console messages */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(5px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 
-.animate-in {
+  .animate-in {
     animation: fadeIn 0.3s ease-out forwards;
-}
+  }
 </style>
 {% endblock %}

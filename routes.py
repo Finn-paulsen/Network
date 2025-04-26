@@ -28,21 +28,20 @@ def index():
     return redirect(url_for('login'))
 
 @app.route('/login', methods=['GET', 'POST'])
-def login():
-    if current_user.is_authenticated:
-        return redirect(url_for('dashboard'))
-    
-    form = LoginForm()
+def login_page():
+    form = LoginForm()  # <--- Formular erstellen
     if form.validate_on_submit():
         user = User.get_by_username(form.username.data)
         if user and user.check_password(form.password.data):
             login_user(user)
             flash('Login successful!', 'success')
-            return redirect(url_for('dashboard'))
+            return redirect(url_for('dashboard_page'))
         else:
             flash('Invalid username or password', 'danger')
     
-    return render_template('login.html', form=form)
+    return render_template('login.html', form=form)  # <--- form mitgeben!
+
+
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -64,14 +63,14 @@ def register():
 
 @app.route('/logout')
 @login_required
-def logout():
+def logout_page():
     logout_user()
     flash('You have been logged out', 'info')
-    return redirect(url_for('login'))
+    return redirect(url_for('login_page'))
 
 @app.route('/dashboard')
 @login_required
-def dashboard():
+def dashboard_page():
     now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     return render_template('dashboard.html', now=now)
 
