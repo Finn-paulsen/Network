@@ -30,7 +30,7 @@ db = SQLAlchemy(app)
 # Initialize login manager
 login_manager = LoginManager()
 login_manager.init_app(app)
-login_manager.login_view = 'login_page'
+login_manager.login_view = 'login'
 
 # User loader function for Flask-Login
 @login_manager.user_loader
@@ -44,42 +44,6 @@ def setup_database():
     with app.app_context():
         db.create_all()
         init_db()
-
-# --- Login required decorator ---
-def login_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if 'user_id' not in session:
-            return redirect(url_for('login'))
-        return f(*args, **kwargs)
-    return decorated_function
-
-# --- Routes ---
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    form = LoginForm()  # Form-Objekt erstellen
-
-    if form.validate_on_submit():  # Überprüfung der Eingaben
-        username = form.username.data
-        password = form.password.data
-
-        # Hier kannst du echte User-Überprüfung machen
-        if username == 'test' and password == 'password':
-            session['user_id'] = 1
-            return redirect(url_for('dashboard_page'))
-        else:
-            return 'Falscher Benutzername oder Passwort!'
-
-    return render_template('login.html', form=form)
-
-@app.route('/logout')
-def logout():
-    session.pop('user_id', None)
-    return redirect(url_for('login'))
-
-
-
-@app.route('/dashboard')
-@login_required
-def dashboard():
-    return render_template('dashboard.html')
+# Note: Route handlers are defined in `routes.py` to keep the app module focused
+# on application factory/configuration. Importing `routes` will register the
+# URL routes when the application starts (see `main.py`).
