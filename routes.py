@@ -18,6 +18,9 @@ from firewall_utils import add_firewall_rule, get_firewall_rules, delete_firewal
 import subprocess
 import logging
 
+# Hydra Node API (NRF24-Gateway-01 Heartbeat + Status)
+from hydra_api import *
+
 # Initialize database
 setup_database()
 
